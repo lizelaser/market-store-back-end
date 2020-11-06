@@ -149,7 +149,13 @@ C:\Users\Lizel\OneDrive\Documentos\SERIE 500 - I\COMERCIO ELECTRÓNICO\Laborator
 C:\Users\Lizel\OneDrive\Documentos\SERIE 500 - I\COMERCIO ELECTRÓNICO\Laboratorio\MarketStore\MarketStore\bin\Debug\netcoreapp3.1\tr\Microsoft.CodeAnalysis.Workspaces.resources.dll
 C:\Users\Lizel\OneDrive\Documentos\SERIE 500 - I\COMERCIO ELECTRÓNICO\Laboratorio\MarketStore\MarketStore\bin\Debug\netcoreapp3.1\zh-Hans\Microsoft.CodeAnalysis.Workspaces.resources.dll
 C:\Users\Lizel\OneDrive\Documentos\SERIE 500 - I\COMERCIO ELECTRÓNICO\Laboratorio\MarketStore\MarketStore\bin\Debug\netcoreapp3.1\zh-Hant\Microsoft.CodeAnalysis.Workspaces.resources.dll
-C:\Users\Lizel\OneDrive\Documentos\SERIE 500 - I\COMERCIO ELECTRÓNICO\Laboratorio\MarketStore\MarketStore\obj\Debug\netcoreapp3.1\MarketStore.MvcApplicationPartsAssemblyInfo.cache
 C:\Users\Lizel\OneDrive\Documentos\SERIE 500 - I\COMERCIO ELECTRÓNICO\Laboratorio\MarketStore\MarketStore\obj\Debug\netcoreapp3.1\MarketStore.dll
 C:\Users\Lizel\OneDrive\Documentos\SERIE 500 - I\COMERCIO ELECTRÓNICO\Laboratorio\MarketStore\MarketStore\obj\Debug\netcoreapp3.1\MarketStore.pdb
 C:\Users\Lizel\OneDrive\Documentos\SERIE 500 - I\COMERCIO ELECTRÓNICO\Laboratorio\MarketStore\MarketStore\obj\Debug\netcoreapp3.1\MarketStore.genruntimeconfig.cache
+C:\Users\Lizel\OneDrive\Documentos\SERIE 500 - I\COMERCIO ELECTRÓNICO\Laboratorio\MarketStore\MarketStore\bin\Debug\netcoreapp3.1\Microsoft.AspNetCore.Authentication.JwtBearer.dll
+C:\Users\Lizel\OneDrive\Documentos\SERIE 500 - I\COMERCIO ELECTRÓNICO\Laboratorio\MarketStore\MarketStore\bin\Debug\netcoreapp3.1\Microsoft.Extensions.Configuration.FileExtensions.dll
+C:\Users\Lizel\OneDrive\Documentos\SERIE 500 - I\COMERCIO ELECTRÓNICO\Laboratorio\MarketStore\MarketStore\bin\Debug\netcoreapp3.1\Microsoft.Extensions.Configuration.Json.dll
+C:\Users\Lizel\OneDrive\Documentos\SERIE 500 - I\COMERCIO ELECTRÓNICO\Laboratorio\MarketStore\MarketStore\bin\Debug\netcoreapp3.1\Microsoft.Extensions.FileProviders.Abstractions.dll
+C:\Users\Lizel\OneDrive\Documentos\SERIE 500 - I\COMERCIO ELECTRÓNICO\Laboratorio\MarketStore\MarketStore\bin\Debug\netcoreapp3.1\Microsoft.Extensions.FileProviders.Physical.dll
+C:\Users\Lizel\OneDrive\Documentos\SERIE 500 - I\COMERCIO ELECTRÓNICO\Laboratorio\MarketStore\MarketStore\bin\Debug\netcoreapp3.1\Microsoft.Extensions.FileSystemGlobbing.dll
+C:\Users\Lizel\OneDrive\Documentos\SERIE 500 - I\COMERCIO ELECTRÓNICO\Laboratorio\MarketStore\MarketStore\obj\Debug\netcoreapp3.1\MarketStore.MvcApplicationPartsAssemblyInfo.cache

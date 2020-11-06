@@ -7,12 +7,14 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Domain.Models;
 
+
 namespace MarketStore.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
     public class BannerdetalleController : ControllerBase
     {
+        
         private readonly MARKETSTOREContext _context;
 
         public BannerdetalleController(MARKETSTOREContext context)

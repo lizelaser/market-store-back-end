@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.Extensions.Configuration;
 
 namespace Domain.Models
 {
@@ -26,8 +27,6 @@ namespace Domain.Models
         public virtual DbSet<Direccion> Direccion { get; set; }
         public virtual DbSet<Especificacion> Especificacion { get; set; }
         public virtual DbSet<Favorito> Favorito { get; set; }
-        public virtual DbSet<Menu> Menu { get; set; }
-        public virtual DbSet<Menurol> Menurol { get; set; }
         public virtual DbSet<Ordencompra> Ordencompra { get; set; }
         public virtual DbSet<Ordencompradetalle> Ordencompradetalle { get; set; }
         public virtual DbSet<Producto> Producto { get; set; }
@@ -38,6 +37,11 @@ namespace Domain.Models
         {
             if (!optionsBuilder.IsConfigured)
             {
+                Console.WriteLine(System.IO.Directory.GetCurrentDirectory());
+                IConfigurationRoot configuration = new ConfigurationBuilder()
+                    .SetBasePath(System.IO.Directory.GetCurrentDirectory())
+                    .AddJsonFile("appsettings.json")
+                    .Build();
                 optionsBuilder.UseSqlServer("Name=connectionDB");
             }
         }
@@ -267,33 +271,6 @@ namespace Domain.Models
                     .HasForeignKey(d => d.UsuarioId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK__FAVORITO__Usuari__5812160E");
-            });
-
-            modelBuilder.Entity<Menu>(entity =>
-            {
-                entity.ToTable("MENU");
-
-                entity.Property(e => e.Denominacion)
-                    .IsRequired()
-                    .HasMaxLength(64)
-                    .IsUnicode(false);
-            });
-
-            modelBuilder.Entity<Menurol>(entity =>
-            {
-                entity.ToTable("MENUROL");
-
-                entity.HasOne(d => d.Menu)
-                    .WithMany(p => p.Menurol)
-                    .HasForeignKey(d => d.MenuId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__MENUROL__RolId__3B75D760");
-
-                entity.HasOne(d => d.Rol)
-                    .WithMany(p => p.Menurol)
-                    .HasForeignKey(d => d.RolId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__MENUROL__RolId__3C69FB99");
             });
 
             modelBuilder.Entity<Ordencompra>(entity =>
