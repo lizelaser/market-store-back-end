@@ -21,19 +21,19 @@ namespace MarketStore.Controllers
     {
 
         private readonly IConfiguration _configuration;
-        private readonly MARKETSTOREContext db;
+        private readonly MARKETSTOREContext _context;
 
         public AutenticacionController(IConfiguration configuration, MARKETSTOREContext _db)
         {
             _configuration = configuration;
-            db = _db;
+            _context = _db;
         }
 
         [HttpPost]
         [Route("[action]")]
         public String Login(LoginVm json)
         {
-            var usuario = db.Usuario.Where(x => x.Nombre.Equals(json.Usuario) && x.Contrasena.Equals(json.Clave)).FirstOrDefault();
+            var usuario = _context.Usuario.Where(x => x.Nombre.Equals(json.Usuario) && x.Contrasena.Equals(json.Clave)).FirstOrDefault();
 
             if (usuario!=null)
             {
@@ -68,6 +68,50 @@ namespace MarketStore.Controllers
                 return "Error en login";
             }
 
+        }
+
+        [HttpPost]
+        [Route("[action]")]
+        public async Task<ActionResult<Usuario>> Registrar(RegistroUsuarioVm json)
+        {
+            var dbuser = (from u in _context.Usuario where u.Nombre.Equals(json.UsuarioNombre) && u.Correo.Equals(json.Correo) select u).SingleOrDefault();
+
+            if (dbuser == null)
+            {
+                try
+                {
+                    Usuario nuevoUsuario = new Usuario();
+                    nuevoUsuario.Nombre = json.UsuarioNombre;
+                    nuevoUsuario.Contrasena = json.Contrasena;
+                    nuevoUsuario.Correo = json.Correo;
+                    nuevoUsuario.RolId = 2;
+                    nuevoUsuario.FechaReg = DateTime.Now;
+                    nuevoUsuario.Estado = true;
+
+                    _context.Usuario.Add(nuevoUsuario);
+                    await _context.SaveChangesAsync();
+
+                    var usuarioid = nuevoUsuario.Id;
+
+                    Cliente nuevoCliente = new Cliente();
+                    nuevoCliente.UsuarioId = usuarioid;
+                    nuevoCliente.Nombres = json.Nombres;
+                    nuevoCliente.Apellidos = json.Apellidos;
+                    nuevoCliente.Telefono = json.Telefono;
+                    nuevoCliente.Estado = true;
+
+                    _context.Cliente.Add(nuevoCliente);
+                    await _context.SaveChangesAsync();
+
+                    return CreatedAtAction("GetUsuario","Usuario", new { id = nuevoUsuario.Id }, nuevoUsuario);
+                }
+                catch (Exception e)
+                {
+                    return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
+                }
+            }
+
+            return BadRequest(new { error = "El usuario ya existe" });
         }
 
     }

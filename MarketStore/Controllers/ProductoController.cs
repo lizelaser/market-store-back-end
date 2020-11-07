@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Domain.Models;
-
+using Microsoft.AspNetCore.Authorization;
 
 namespace MarketStore.Controllers
 {
@@ -25,7 +25,7 @@ namespace MarketStore.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Producto>>> GetProducto()
         {
-            return await _context.Producto.ToListAsync();
+            return await _context.Producto.Include(x=>x.Categoria).ToListAsync();
         }
 
         // GET: api/Producto/5
@@ -46,6 +46,7 @@ namespace MarketStore.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPut("{id}")]
+        [Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> PutProducto(int id, Producto producto)
         {
             if (id != producto.Id)
@@ -78,6 +79,7 @@ namespace MarketStore.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
+        [Authorize(Policy = "AdminOnly")]
         public async Task<ActionResult<Producto>> PostProducto(Producto producto)
         {
             _context.Producto.Add(producto);
@@ -88,6 +90,7 @@ namespace MarketStore.Controllers
 
         // DELETE: api/Producto/5
         [HttpDelete("{id}")]
+        [Authorize(Policy = "AdminOnly")]
         public async Task<ActionResult<Producto>> DeleteProducto(int id)
         {
             var producto = await _context.Producto.FindAsync(id);

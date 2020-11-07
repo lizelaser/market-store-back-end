@@ -53,10 +53,11 @@ namespace MarketStore
             services.AddAuthorization(opt =>
             {
                 opt.AddPolicy("AdminOnly", policy => policy.RequireRole(System.Security.Claims.ClaimTypes.Role, "1"));
+                opt.AddPolicy("CustomerOnly", policy => policy.RequireRole(System.Security.Claims.ClaimTypes.Role, "2"));
             });
 
             services.AddDbContext<MARKETSTOREContext>(opt=>opt.UseSqlServer(Configuration.GetConnectionString("connectionDB")));
-            services.AddControllers();
+            services.AddControllers().AddNewtonsoftJson(x => x.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

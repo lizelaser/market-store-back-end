@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Domain.Models;
-
+using Microsoft.AspNetCore.Authorization;
 
 namespace MarketStore.Controllers
 {
@@ -47,6 +47,7 @@ namespace MarketStore.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPut("{id}")]
+        [Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> PutCanasta(int id, Canasta canasta)
         {
             if (id != canasta.Id)
@@ -55,7 +56,6 @@ namespace MarketStore.Controllers
             }
 
             _context.Entry(canasta).State = EntityState.Modified;
-
             try
             {
                 await _context.SaveChangesAsync();
@@ -79,6 +79,7 @@ namespace MarketStore.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
+        [Authorize(Policy = "AdminOnly")]
         public async Task<ActionResult<Canasta>> PostCanasta(Canasta canasta)
         {
             _context.Canasta.Add(canasta);
@@ -89,6 +90,7 @@ namespace MarketStore.Controllers
 
         // DELETE: api/Canasta/5
         [HttpDelete("{id}")]
+        [Authorize(Policy = "AdminOnly")]
         public async Task<ActionResult<Canasta>> DeleteCanasta(int id)
         {
             var canasta = await _context.Canasta.FindAsync(id);

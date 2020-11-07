@@ -6,15 +6,15 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Domain.Models;
-
+using Microsoft.AspNetCore.Authorization;
 
 namespace MarketStore.Controllers
 {
     [Route("api/[controller]")]
+    [Authorize(Policy = "AdminOnly")]
     [ApiController]
     public class BannerdetalleController : ControllerBase
     {
-        
         private readonly MARKETSTOREContext _context;
 
         public BannerdetalleController(MARKETSTOREContext context)
@@ -22,14 +22,14 @@ namespace MarketStore.Controllers
             _context = context;
         }
 
-        // GET: api/Bannerdetalles
+        // GET: api/Bannerdetalle
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Bannerdetalle>>> GetBannerdetalle()
         {
             return await _context.Bannerdetalle.ToListAsync();
         }
 
-        // GET: api/Bannerdetalles/5
+        // GET: api/Bannerdetalle/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Bannerdetalle>> GetBannerdetalle(int id)
         {
@@ -43,7 +43,7 @@ namespace MarketStore.Controllers
             return bannerdetalle;
         }
 
-        // PUT: api/Bannerdetalles/5
+        // PUT: api/Bannerdetalle/5
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPut("{id}")]
@@ -75,7 +75,7 @@ namespace MarketStore.Controllers
             return NoContent();
         }
 
-        // POST: api/Bannerdetalles
+        // POST: api/Bannerdetalle
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
@@ -87,7 +87,7 @@ namespace MarketStore.Controllers
             return CreatedAtAction("GetBannerdetalle", new { id = bannerdetalle.Id }, bannerdetalle);
         }
 
-        // DELETE: api/Bannerdetalles/5
+        // DELETE: api/Bannerdetalle/5
         [HttpDelete("{id}")]
         public async Task<ActionResult<Bannerdetalle>> DeleteBannerdetalle(int id)
         {

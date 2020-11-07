@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Domain.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -11,6 +12,7 @@ using Microsoft.EntityFrameworkCore;
 namespace MarketStore.Controllers
 {
     [Route("api/[controller]")]
+    [Authorize(Policy = "CustomerOnly")]
     [ApiController]
     public class CarritoController : ControllerBase
     {

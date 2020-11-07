@@ -78,7 +78,7 @@ namespace MarketStore.Controllers
         // POST: api/Usuario
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
-        [HttpPost]
+        /*[HttpPost]
         public async Task<ActionResult<Usuario>> PostUsuario(Usuario usuario)
         {
             var dbuser = (from u in _context.Usuario where u.Nombre.Equals(usuario.Nombre) && u.Correo.Equals(usuario.Correo) select u).SingleOrDefault();
@@ -99,11 +99,11 @@ namespace MarketStore.Controllers
             }
 
             return BadRequest(new { error = "El usuario ya existe" });
-        }
+        }*/
 
         // DELETE: api/Usuario/5
         [HttpDelete("{id}")]
-
+        [Authorize(Policy ="AdminOnly")]
         public async Task<ActionResult<Usuario>> DeleteUsuario(int id)
         {
             var usuario = await _context.Usuario.FindAsync(id);

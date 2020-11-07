@@ -6,11 +6,12 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Domain.Models;
-
+using Microsoft.AspNetCore.Authorization;
 
 namespace MarketStore.Controllers
 {
     [Route("api/[controller]")]
+    [Authorize(Policy = "AdminOnly")]
     [ApiController]
     public class CarritoproductoController : ControllerBase
     {
