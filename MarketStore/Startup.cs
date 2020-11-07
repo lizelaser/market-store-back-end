@@ -50,6 +50,11 @@ namespace MarketStore
                 };
             });
 
+            services.AddAuthorization(opt =>
+            {
+                opt.AddPolicy("AdminOnly", policy => policy.RequireRole(System.Security.Claims.ClaimTypes.Role, "1"));
+            });
+
             services.AddDbContext<MARKETSTOREContext>(opt=>opt.UseSqlServer(Configuration.GetConnectionString("connectionDB")));
             services.AddControllers();
         }

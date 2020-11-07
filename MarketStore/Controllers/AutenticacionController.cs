@@ -70,38 +70,5 @@ namespace MarketStore.Controllers
 
         }
 
-        [HttpPost]
-        [Route("[action]")]
-        public dynamic Registro(Usuario usuario)
-        {
-            var dbuser = (from u in db.Usuario where u.Nombre.Equals(usuario.Nombre) && u.Correo.Equals(usuario.Correo) select u).SingleOrDefault();
-            var rolid = 2;
-            usuario.RolId = rolid;
-
-            try
-            {
-                if (dbuser != null)
-                {
-                    HttpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
-                    return new { 
-                        message = "El usuario ya existe"
-                    };
-
-                }
-                db.Add(usuario);
-                db.SaveChanges();
-
-                return Ok(usuario);
-
-            }
-            catch (Exception e)
-            {
-                HttpContext.Response.StatusCode = StatusCodes.Status500InternalServerError;
-                return new {
-                    message = e.Message
-                };
-            }
-        }
-
     }
 }

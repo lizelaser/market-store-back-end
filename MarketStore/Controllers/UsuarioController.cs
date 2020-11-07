@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Domain.Models;
-
+using Microsoft.AspNetCore.Authorization;
 
 namespace MarketStore.Controllers
 {
@@ -46,6 +46,7 @@ namespace MarketStore.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPut("{id}")]
+        [Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> PutUsuario(int id, Usuario usuario)
         {
             if (id != usuario.Id)
@@ -80,14 +81,29 @@ namespace MarketStore.Controllers
         [HttpPost]
         public async Task<ActionResult<Usuario>> PostUsuario(Usuario usuario)
         {
-            _context.Usuario.Add(usuario);
-            await _context.SaveChangesAsync();
+            var dbuser = (from u in _context.Usuario where u.Nombre.Equals(usuario.Nombre) && u.Correo.Equals(usuario.Correo) select u).SingleOrDefault();
 
-            return CreatedAtAction("GetUsuario", new { id = usuario.Id }, usuario);
+            if (dbuser == null)
+            {
+                try
+                {
+                    usuario.RolId = 2;
+                    _context.Usuario.Add(usuario);
+                    await _context.SaveChangesAsync();
+
+                    return CreatedAtAction("GetUsuario", new { id = usuario.Id }, usuario);
+                } catch (Exception e)
+                {
+                    return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
+                }
+            }
+
+            return BadRequest(new { error = "El usuario ya existe" });
         }
 
         // DELETE: api/Usuario/5
         [HttpDelete("{id}")]
+
         public async Task<ActionResult<Usuario>> DeleteUsuario(int id)
         {
             var usuario = await _context.Usuario.FindAsync(id);
