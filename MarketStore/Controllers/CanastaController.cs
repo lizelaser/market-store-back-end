@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Domain.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
+using MarketStore.Utilities;
 
 namespace MarketStore.Controllers
 {
@@ -16,10 +18,12 @@ namespace MarketStore.Controllers
     {
         
         private readonly MARKETSTOREContext _context;
+        private IWebHostEnvironment _env;
 
-        public CanastaController(MARKETSTOREContext context)
+        public CanastaController(MARKETSTOREContext context, IWebHostEnvironment env)
         {
             _context = context;
+            _env = env;
         }
 
         // GET: api/Canasta
@@ -82,10 +86,17 @@ namespace MarketStore.Controllers
         [Authorize(Policy = "AdminOnly")]
         public async Task<ActionResult<Canasta>> PostCanasta(Canasta canasta)
         {
-            _context.Canasta.Add(canasta);
-            await _context.SaveChangesAsync();
+            (bool success, string path) t = Conversor.SaveImage(_env.ContentRootPath, canasta.Imagen);
+            if (t.success && t.path != null)
+            {
+                canasta.Imagen = t.path;
 
-            return CreatedAtAction("GetCanasta", new { id = canasta.Id }, canasta);
+                _context.Canasta.Add(canasta);
+                await _context.SaveChangesAsync();
+
+                return CreatedAtAction("GetCanasta", new { id = canasta.Id }, canasta);
+            }
+            return StatusCode(StatusCodes.Status400BadRequest, t.path);
         }
 
         // DELETE: api/Canasta/5

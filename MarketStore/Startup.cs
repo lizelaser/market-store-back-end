@@ -69,7 +69,7 @@ namespace MarketStore
             }
 
             app.UseHttpsRedirection();
-
+            app.UseStaticFiles();
             app.UseRouting();
 
             app.UseAuthentication();

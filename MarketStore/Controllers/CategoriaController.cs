@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Domain.Models;
 using Microsoft.AspNetCore.Authorization;
+using MarketStore.Utilities;
+using Microsoft.AspNetCore.Hosting;
 
 namespace MarketStore.Controllers
 {
@@ -15,10 +17,12 @@ namespace MarketStore.Controllers
     public class CategoriaController : ControllerBase
     {
         private readonly MARKETSTOREContext _context;
+        private IWebHostEnvironment _env;
 
-        public CategoriaController(MARKETSTOREContext context)
+        public CategoriaController(MARKETSTOREContext context, IWebHostEnvironment env)
         {
             _context = context;
+            _env = env;
         }
 
         // GET: api/Categoria
@@ -83,10 +87,18 @@ namespace MarketStore.Controllers
         [Authorize(Policy = "AdminOnly")]
         public async Task<ActionResult<Categoria>> PostCategoria(Categoria categoria)
         {
-            _context.Categoria.Add(categoria);
-            await _context.SaveChangesAsync();
+            (bool success, string path) t = Conversor.SaveImage(_env.ContentRootPath, categoria.Imagen);
+            if (t.success && t.path != null)
+            {
+                categoria.Imagen = t.path;
 
-            return CreatedAtAction("GetCategoria", new { id = categoria.Id }, categoria);
+                _context.Categoria.Add(categoria);
+                await _context.SaveChangesAsync();
+
+                return CreatedAtAction("GetCategoria", new { id = categoria.Id }, categoria);
+            }
+            return StatusCode(StatusCodes.Status400BadRequest, t.path);
+
         }
 
         // DELETE: api/Categoria/5

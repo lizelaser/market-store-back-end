@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Domain.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
+using MarketStore.Utilities;
 
 namespace MarketStore.Controllers
 {
@@ -15,10 +17,12 @@ namespace MarketStore.Controllers
     public class BannerController : ControllerBase
     {
         private readonly MARKETSTOREContext _context;
+        private IWebHostEnvironment _env;
 
-        public BannerController(MARKETSTOREContext context)
+        public BannerController(MARKETSTOREContext context, IWebHostEnvironment env)
         {
             _context = context;
+            _env = env;
         }
 
         // GET: api/Banner
@@ -82,10 +86,18 @@ namespace MarketStore.Controllers
         [Authorize(Policy = "AdminOnly")]
         public async Task<ActionResult<Banner>> PostBanner(Banner banner)
         {
-            _context.Banner.Add(banner);
-            await _context.SaveChangesAsync();
+            (bool success, string path) t = Conversor.SaveImage(_env.ContentRootPath, banner.Imagen);
+            if (t.success && t.path != null)
+            {
+                banner.Imagen = t.path;
 
-            return CreatedAtAction("GetBanner", new { id = banner.Id }, banner);
+                _context.Banner.Add(banner);
+                await _context.SaveChangesAsync();
+
+                return CreatedAtAction("GetBanner", new { id = banner.Id }, banner);
+            }
+            return StatusCode(StatusCodes.Status400BadRequest, t.path);
+
         }
 
         // DELETE: api/Banner/5

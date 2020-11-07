@@ -7,6 +7,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Domain.Models;
 using Microsoft.AspNetCore.Authorization;
+using javax.jws;
+using System.IO;
+using Microsoft.AspNetCore.Hosting;
+using MarketStore.Utilities;
 
 namespace MarketStore.Controllers
 {
@@ -15,10 +19,12 @@ namespace MarketStore.Controllers
     public class ProductoController : ControllerBase
     {
         private readonly MARKETSTOREContext _context;
+        private IWebHostEnvironment _env;
 
-        public ProductoController(MARKETSTOREContext context)
+        public ProductoController(MARKETSTOREContext context, IWebHostEnvironment env)
         {
             _context = context;
+            _env = env;
         }
 
         // GET: api/Producto
@@ -82,10 +88,19 @@ namespace MarketStore.Controllers
         [Authorize(Policy = "AdminOnly")]
         public async Task<ActionResult<Producto>> PostProducto(Producto producto)
         {
-            _context.Producto.Add(producto);
-            await _context.SaveChangesAsync();
+            (bool success, string path) t = Conversor.SaveImage(_env.ContentRootPath, producto.Imagen);
 
-            return CreatedAtAction("GetProducto", new { id = producto.Id }, producto);
+            if (t.success && t.path != null)
+            {
+                producto.Imagen = t.path;
+
+                _context.Producto.Add(producto);
+                await _context.SaveChangesAsync();
+
+                return CreatedAtAction("GetProducto", new { id = producto.Id }, producto);
+            }
+
+            return StatusCode(StatusCodes.Status400BadRequest, t.path);
         }
 
         // DELETE: api/Producto/5
@@ -109,5 +124,8 @@ namespace MarketStore.Controllers
         {
             return _context.Producto.Any(e => e.Id == id);
         }
+
+        
+
     }
 }
