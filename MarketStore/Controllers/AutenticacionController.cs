@@ -6,6 +6,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using Domain.Models;
+using MarketStore.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -22,55 +23,84 @@ namespace MarketStore.Controllers
         private readonly IConfiguration _configuration;
         private readonly MARKETSTOREContext db;
 
-        public AutenticacionController(IConfiguration configuration, Domain.Models.MARKETSTOREContext _db)
+        public AutenticacionController(IConfiguration configuration, MARKETSTOREContext _db)
         {
             _configuration = configuration;
             db = _db;
         }
 
-        [HttpGet]
+        [HttpPost]
         [Route("[action]")]
-        public String Login()
+        public String Login(LoginVm json)
         {
-            //var usuarios = db.Usuario.Select(x => x.Nombre , x.Contrasena).ToList();
+            var usuario = db.Usuario.Where(x => x.Nombre.Equals(json.Usuario) && x.Contrasena.Equals(json.Clave)).FirstOrDefault();
 
-            // Tu código para validar que el usuario ingresado es válido
-
-            // Asumamos que tenemos un usuario válido
-            var user = new Domain.Models.Usuario
+            if (usuario!=null)
             {
-                Nombre = "Eduardo",
-                Correo = "admin@kodoti.com",
-                Id = 1
+                // Leemos el secret_key desde nuestro appseting
+                var secretKey = _configuration.GetValue<string>("SecretKey");
+                var key = Encoding.ASCII.GetBytes(secretKey);
+
+                // Creamos los claims (pertenencias, características) del usuario
+                var claims = new[]
+                {
+                new Claim(ClaimTypes.NameIdentifier, usuario.Id.ToString()),
+                new Claim(ClaimTypes.Role, usuario.RolId.ToString()),
+                new Claim(ClaimTypes.Email, usuario.Correo)
             };
 
-            var usuario = db.Usuario.ToList();
+                var tokenDescriptor = new SecurityTokenDescriptor
+                {
+                    Subject = new ClaimsIdentity(claims),
+                    // Nuestro token va a durar un día
+                    Expires = DateTime.UtcNow.AddDays(28),
+                    // Credenciales para generar el token usando nuestro secretykey y el algoritmo hash 256
+                    SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+                };
 
-            // Leemos el secret_key desde nuestro appseting
-            var secretKey = _configuration.GetValue<string>("SecretKey");
-            var key = Encoding.ASCII.GetBytes(secretKey);
+                var tokenHandler = new JwtSecurityTokenHandler();
+                var createdToken = tokenHandler.CreateToken(tokenDescriptor);
 
-            // Creamos los claims (pertenencias, características) del usuario
-            var claims = new[]
+                return tokenHandler.WriteToken(createdToken);
+            }
+            else
             {
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new Claim(ClaimTypes.Role, user.RolId.ToString()),
-                new Claim(ClaimTypes.Email, user.Correo)
-            };
+                return "Error en login";
+            }
 
-            var tokenDescriptor = new SecurityTokenDescriptor
+        }
+
+        [HttpPost]
+        [Route("[action]")]
+        public dynamic Registro(Usuario usuario)
+        {
+            var dbuser = (from u in db.Usuario where u.Nombre.Equals(usuario.Nombre) && u.Correo.Equals(usuario.Correo) select u).SingleOrDefault();
+            var rolid = 2;
+            usuario.RolId = rolid;
+
+            try
             {
-                Subject = new ClaimsIdentity(claims),
-                // Nuestro token va a durar un día
-                Expires = DateTime.UtcNow.AddDays(28),
-                // Credenciales para generar el token usando nuestro secretykey y el algoritmo hash 256
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
-            };
+                if (dbuser != null)
+                {
+                    HttpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
+                    return new { 
+                        message = "El usuario ya existe"
+                    };
 
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var createdToken = tokenHandler.CreateToken(tokenDescriptor);
+                }
+                db.Add(usuario);
+                db.SaveChanges();
 
-            return tokenHandler.WriteToken(createdToken);
+                return Ok(usuario);
+
+            }
+            catch (Exception e)
+            {
+                HttpContext.Response.StatusCode = StatusCodes.Status500InternalServerError;
+                return new {
+                    message = e.Message
+                };
+            }
         }
 
     }
