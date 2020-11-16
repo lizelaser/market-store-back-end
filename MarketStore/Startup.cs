@@ -57,6 +57,7 @@ namespace MarketStore
             });
 
             services.AddDbContext<MARKETSTOREContext>(opt=>opt.UseSqlServer(Configuration.GetConnectionString("connectionDB")));
+            services.AddCors();
             services.AddControllers().AddNewtonsoftJson(x => x.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
         }
 
@@ -74,6 +75,8 @@ namespace MarketStore
 
             app.UseAuthentication();
             app.UseAuthorization();
+
+            app.UseCors(policy => policy.AllowAnyMethod().AllowAnyHeader().SetIsOriginAllowed(origin => true).AllowCredentials());
 
             app.UseEndpoints(endpoints =>
             {

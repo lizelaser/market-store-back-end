@@ -60,10 +60,15 @@ namespace MarketStore.Controllers
                 return BadRequest();
             }
 
-            _context.Entry(producto).State = EntityState.Modified;
-
             try
             {
+                (bool success, string path) t = Conversor.SaveImage(_env.ContentRootPath, producto.Imagen);
+
+                if (t.success && t.path != null)
+                {
+                    producto.Imagen = t.path;
+                }
+                _context.Entry(producto).State = EntityState.Modified;
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)

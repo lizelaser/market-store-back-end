@@ -31,11 +31,11 @@ namespace MarketStore.Controllers
 
         [HttpPost]
         [Route("[action]")]
-        public String Login(LoginVm json)
+        public ActionResult<String> Login(LoginVm json)
         {
             var usuario = _context.Usuario.Where(x => x.Nombre.Equals(json.Usuario) && x.Contrasena.Equals(json.Clave)).FirstOrDefault();
 
-            if (usuario!=null)
+            if (usuario != null)
             {
                 // Leemos el secret_key desde nuestro appseting
                 var secretKey = _configuration.GetValue<string>("SecretKey");
@@ -44,10 +44,10 @@ namespace MarketStore.Controllers
                 // Creamos los claims (pertenencias, características) del usuario
                 var claims = new[]
                 {
-                new Claim(ClaimTypes.NameIdentifier, usuario.Id.ToString()),
-                new Claim(ClaimTypes.Role, usuario.RolId.ToString()),
-                new Claim(ClaimTypes.Email, usuario.Correo)
-            };
+                    new Claim(ClaimTypes.NameIdentifier, usuario.Id.ToString()),
+                    new Claim(ClaimTypes.Role, usuario.RolId.ToString()),
+                    new Claim(ClaimTypes.Email, usuario.Correo)
+                };
 
                 var tokenDescriptor = new SecurityTokenDescriptor
                 {
@@ -61,11 +61,11 @@ namespace MarketStore.Controllers
                 var tokenHandler = new JwtSecurityTokenHandler();
                 var createdToken = tokenHandler.CreateToken(tokenDescriptor);
 
-                return tokenHandler.WriteToken(createdToken);
+                return Ok(tokenHandler.WriteToken(createdToken));
             }
             else
             {
-                return "Error en login";
+                return BadRequest("El usuario no existe o se encuentra desactivado");
             }
 
         }
@@ -103,7 +103,7 @@ namespace MarketStore.Controllers
                     _context.Cliente.Add(nuevoCliente);
                     await _context.SaveChangesAsync();
 
-                    return CreatedAtAction("GetUsuario","Usuario", new { id = nuevoUsuario.Id }, nuevoUsuario);
+                    return CreatedAtAction("GetUsuario", "Usuario", new { id = nuevoUsuario.Id }, nuevoUsuario);
                 }
                 catch (Exception e)
                 {

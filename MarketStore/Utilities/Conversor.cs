@@ -13,16 +13,20 @@ namespace MarketStore.Utilities
         {
             try
             {
-                using MemoryStream ms = new MemoryStream(Convert.FromBase64String(base64String));
-                using Bitmap bm2 = new Bitmap(ms);
-                Guid uuid = System.Guid.NewGuid();
-                string file = uuid.ToString() + ".jpg";
+                if (base64String != null)
+                {
+                    using MemoryStream ms = new MemoryStream(Convert.FromBase64String(base64String));
+                    using Bitmap bm2 = new Bitmap(ms);
+                    Guid uuid = System.Guid.NewGuid();
+                    string file = uuid.ToString() + ".jpg";
 
-                string path = Path.Join(wwwpath.AsSpan(), "wwwroot".AsSpan(), "images".AsSpan(), file.AsSpan());
+                    string path = Path.Join(wwwpath.AsSpan(), "wwwroot".AsSpan(), "images".AsSpan(), file.AsSpan());
 
-                bm2.Save(path, System.Drawing.Imaging.ImageFormat.Jpeg);
+                    bm2.Save(path, System.Drawing.Imaging.ImageFormat.Jpeg);
 
-                return (true, file);
+                    return (true, file);
+                }
+                return (false, null);
             }
             catch(Exception e)
             {
