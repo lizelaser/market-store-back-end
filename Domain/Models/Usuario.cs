@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace Domain.Models
 {
@@ -21,9 +22,13 @@ namespace Domain.Models
         public DateTime? FechaMod { get; set; }
         public bool? Estado { get; set; }
 
+        [JsonIgnore]
         public virtual Rol Rol { get; set; }
+        [JsonIgnore]
         public virtual ICollection<Carrito> Carrito { get; set; }
+        [JsonIgnore]
         public virtual ICollection<Cliente> Cliente { get; set; }
+        [JsonIgnore]
         public virtual ICollection<Favorito> Favorito { get; set; }
     }
 }

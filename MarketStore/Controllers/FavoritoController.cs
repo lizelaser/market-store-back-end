@@ -25,7 +25,8 @@ namespace MarketStore.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Favorito>>> GetFavorito()
         {
-            return await _context.Favorito.ToListAsync();
+            return await _context.Favorito.Include(f => f.Producto).ToListAsync();
+            
         }
 
         // GET: api/Favorito/5

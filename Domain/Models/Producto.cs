@@ -1,20 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace Domain.Models
 {
     public partial class Producto
     {
-        public Producto()
-        {
-            Bannerdetalle = new HashSet<Bannerdetalle>();
-            Canastadetalle = new HashSet<Canastadetalle>();
-            Carritoproducto = new HashSet<Carritoproducto>();
-            Especificacion = new HashSet<Especificacion>();
-            Favorito = new HashSet<Favorito>();
-            Ordencompradetalle = new HashSet<Ordencompradetalle>();
-        }
-
         public int Id { get; set; }
         public int CategoriaId { get; set; }
         public string Nombre { get; set; }
@@ -30,12 +21,19 @@ namespace Domain.Models
         public string Descripcion { get; set; }
         public bool? Estado { get; set; }
 
+        [JsonIgnore]
         public virtual Categoria Categoria { get; set; }
+        [JsonIgnore]
         public virtual ICollection<Bannerdetalle> Bannerdetalle { get; set; }
+        [JsonIgnore]
         public virtual ICollection<Canastadetalle> Canastadetalle { get; set; }
+        [JsonIgnore]
         public virtual ICollection<Carritoproducto> Carritoproducto { get; set; }
+        [JsonIgnore]
         public virtual ICollection<Especificacion> Especificacion { get; set; }
+        [JsonIgnore]
         public virtual ICollection<Favorito> Favorito { get; set; }
+        [JsonIgnore]
         public virtual ICollection<Ordencompradetalle> Ordencompradetalle { get; set; }
     }
 }

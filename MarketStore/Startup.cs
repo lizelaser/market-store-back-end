@@ -58,7 +58,7 @@ namespace MarketStore
 
             services.AddDbContext<MARKETSTOREContext>(opt=>opt.UseSqlServer(Configuration.GetConnectionString("connectionDB")));
             services.AddCors();
-            services.AddControllers().AddNewtonsoftJson(x => x.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
+            services.AddControllers();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

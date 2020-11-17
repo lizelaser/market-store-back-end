@@ -25,7 +25,7 @@ namespace MarketStore.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Canastadetalle>>> GetCanastadetalle()
         {
-            return await _context.Canastadetalle.ToListAsync();
+            return await _context.Canastadetalle.Include(cd => cd.Producto).ToListAsync();
         }
 
         // GET: api/Canastadetalle/5
