@@ -25,21 +25,22 @@ namespace MarketStore.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Favorito>>> GetFavorito()
         {
-            return await _context.Favorito.ToListAsync();
+            return await _context.Favorito.Include(f => f.Producto).ToListAsync();
+            
         }
 
         // GET: api/Favorito/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Favorito>> GetFavorito(int id)
         {
-            var favorito = await _context.Favorito.FindAsync(id);
+            var favorito = await _context.Favorito.Include(f => f.Producto).SingleOrDefaultAsync(f => f.Id == id);
 
             if (favorito == null)
             {
                 return NotFound();
             }
 
-            return favorito;
+            return Ok(favorito);
         }
 
         // PUT: api/Favorito/5

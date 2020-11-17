@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Text.Json.Serialization;
 
 namespace Domain.Models
 {
@@ -10,6 +9,7 @@ namespace Domain.Models
         public string Detalle { get; set; }
         public string Valor { get; set; }
 
+        [JsonIgnore]
         public virtual Producto Producto { get; set; }
     }
 }

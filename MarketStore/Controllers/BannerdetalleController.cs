@@ -26,7 +26,7 @@ namespace MarketStore.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Bannerdetalle>>> GetBannerdetalle()
         {
-            return await _context.Bannerdetalle.ToListAsync();
+            return await _context.Bannerdetalle.Include(bd => bd.Producto).ToListAsync();
         }
 
         // GET: api/Bannerdetalle/5

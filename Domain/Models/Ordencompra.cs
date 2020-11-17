@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace Domain.Models
 {
     public partial class Ordencompra
     {
-        public Ordencompra()
-        {
-            Ordencompradetalle = new HashSet<Ordencompradetalle>();
-        }
-
         public int Id { get; set; }
         public int CarritoId { get; set; }
         public int DireccionId { get; set; }
@@ -20,8 +15,10 @@ namespace Domain.Models
         public decimal PrecioEnvio { get; set; }
         public decimal Total { get; set; }
 
+        [JsonIgnore]
         public virtual Carrito Carrito { get; set; }
         public virtual Direccion Direccion { get; set; }
+        [JsonIgnore]
         public virtual ICollection<Ordencompradetalle> Ordencompradetalle { get; set; }
     }
 }

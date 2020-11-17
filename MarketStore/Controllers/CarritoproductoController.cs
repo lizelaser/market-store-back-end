@@ -26,7 +26,7 @@ namespace MarketStore.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Carritoproducto>>> GetCarritoproducto()
         {
-            return await _context.Carritoproducto.ToListAsync();
+            return await _context.Carritoproducto.Include(cp => cp.Producto).ToListAsync();
         }
 
         // GET: api/Carritoproducto/5

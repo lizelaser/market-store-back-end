@@ -87,18 +87,26 @@ namespace MarketStore.Controllers
         [Authorize(Policy = "AdminOnly")]
         public async Task<ActionResult<Categoria>> PostCategoria(Categoria categoria)
         {
-            (bool success, string path) t = Conversor.SaveImage(_env.ContentRootPath, categoria.Imagen);
-            if (t.success && t.path != null)
+            try
             {
-                categoria.Imagen = t.path;
+                categoria.Imagen = Conversor.SaveImage(_env.ContentRootPath, categoria.Imagen);
+            }
+            catch (ConversorException e)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
+            }
 
+            try
+            {
                 _context.Categoria.Add(categoria);
                 await _context.SaveChangesAsync();
 
                 return CreatedAtAction("GetCategoria", new { id = categoria.Id }, categoria);
             }
-            return StatusCode(StatusCodes.Status400BadRequest, t.path);
-
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
         }
 
         // DELETE: api/Categoria/5

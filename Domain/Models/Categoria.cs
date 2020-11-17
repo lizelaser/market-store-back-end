@@ -1,19 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace Domain.Models
 {
     public partial class Categoria
     {
-        public Categoria()
-        {
-            Producto = new HashSet<Producto>();
-        }
-
         public int Id { get; set; }
         public string Denominacion { get; set; }
         public string Imagen { get; set; }
 
+        [JsonIgnore]
         public virtual ICollection<Producto> Producto { get; set; }
     }
 }

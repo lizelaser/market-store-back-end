@@ -7,11 +7,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Domain.Models;
 using Microsoft.AspNetCore.Authorization;
-using javax.jws;
-using System.IO;
 using Microsoft.AspNetCore.Hosting;
 using MarketStore.Utilities;
 using MarketStore.Models;
+using Microsoft.AspNetCore.Http.Extensions;
 
 namespace MarketStore.Controllers
 {
@@ -100,13 +99,14 @@ namespace MarketStore.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Producto>> GetProducto(int id)
         {
-            var producto = await _context.Producto.FindAsync(id);
+            Producto producto = await _context.Producto.FindAsync(id);
 
             if (producto == null)
             {
                 return NotFound();
             }
 
+            producto.Imagen = $"{Request.Scheme}://{Request.Host}/images/{producto.Imagen}";
             return producto;
         }
 
@@ -124,14 +124,14 @@ namespace MarketStore.Controllers
 
             try
             {
-                (bool success, string path) t = Conversor.SaveImage(_env.ContentRootPath, producto.Imagen);
+                producto.Imagen = Conversor.SaveImage(_env.ContentRootPath, producto.Imagen);
 
-                if (t.success && t.path != null)
-                {
-                    producto.Imagen = t.path;
-                }
                 _context.Entry(producto).State = EntityState.Modified;
                 await _context.SaveChangesAsync();
+            }
+            catch (ConversorException e)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -155,19 +155,24 @@ namespace MarketStore.Controllers
         [Authorize(Policy = "AdminOnly")]
         public async Task<ActionResult<Producto>> PostProducto(Producto producto)
         {
-            (bool success, string path) t = Conversor.SaveImage(_env.ContentRootPath, producto.Imagen);
-
-            if (t.success && t.path != null)
+            try
             {
-                producto.Imagen = t.path;
+                producto.Imagen = Conversor.SaveImage(_env.ContentRootPath, producto.Imagen);
+            } catch (ConversorException e)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
+            }
 
+            try
+            {
                 _context.Producto.Add(producto);
                 await _context.SaveChangesAsync();
 
                 return CreatedAtAction("GetProducto", new { id = producto.Id }, producto);
+            } catch (Exception e)
+            {
+                return BadRequest(e.Message);
             }
-
-            return StatusCode(StatusCodes.Status400BadRequest, t.path);
         }
 
         // DELETE: api/Producto/5

@@ -1,18 +1,11 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Domain.Models;
 
@@ -33,15 +26,15 @@ namespace MarketStore
 
             var key = Encoding.ASCII.GetBytes(Configuration.GetValue<string>("SecretKey"));
 
-            services.AddAuthentication(x =>
+            services.AddAuthentication(auth =>
             {
-                x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            }).AddJwtBearer(x =>
+                auth.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                auth.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(jwt =>
             {
-                x.RequireHttpsMetadata = false;
-                x.SaveToken = true;
-                x.TokenValidationParameters = new TokenValidationParameters
+                jwt.RequireHttpsMetadata = false;
+                jwt.SaveToken = true;
+                jwt.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuerSigningKey = true,
                     IssuerSigningKey = new SymmetricSecurityKey(key),
@@ -50,15 +43,15 @@ namespace MarketStore
                 };
             });
 
-            services.AddAuthorization(opt =>
+            services.AddAuthorization(auth =>
             {
-                opt.AddPolicy("AdminOnly", policy => policy.RequireRole(System.Security.Claims.ClaimTypes.Role, "1"));
-                opt.AddPolicy("CustomerOnly", policy => policy.RequireRole(System.Security.Claims.ClaimTypes.Role, "2"));
+                auth.AddPolicy("AdminOnly", policy => policy.RequireRole(System.Security.Claims.ClaimTypes.Role, "1"));
+                auth.AddPolicy("CustomerOnly", policy => policy.RequireRole(System.Security.Claims.ClaimTypes.Role, "2"));
             });
 
-            services.AddDbContext<MARKETSTOREContext>(opt=>opt.UseSqlServer(Configuration.GetConnectionString("connectionDB")));
+            services.AddDbContext<MARKETSTOREContext>(db => db.UseSqlServer(Configuration.GetConnectionString("connectionDB")));
             services.AddCors();
-            services.AddControllers().AddNewtonsoftJson(x => x.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
+            services.AddControllers();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -76,11 +69,11 @@ namespace MarketStore
             app.UseAuthentication();
             app.UseAuthorization();
 
-            app.UseCors(policy => policy.AllowAnyMethod().AllowAnyHeader().SetIsOriginAllowed(origin => true).AllowCredentials());
+            app.UseCors(cors => cors.AllowAnyMethod().AllowAnyHeader().SetIsOriginAllowed(origin => true).AllowCredentials());
 
-            app.UseEndpoints(endpoints =>
+            app.UseEndpoints(end =>
             {
-                endpoints.MapControllers();
+                end.MapControllers();
             });
         }
     }

@@ -1,18 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace Domain.Models
 {
     public partial class Rol
     {
-        public Rol()
-        {
-            Usuario = new HashSet<Usuario>();
-        }
-
         public int Id { get; set; }
         public string Denominacion { get; set; }
 
+        [JsonIgnore]
         public virtual ICollection<Usuario> Usuario { get; set; }
     }
 }

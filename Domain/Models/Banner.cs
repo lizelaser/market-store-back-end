@@ -1,15 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace Domain.Models
 {
     public partial class Banner
     {
-        public Banner()
-        {
-            Bannerdetalle = new HashSet<Bannerdetalle>();
-        }
-
         public int Id { get; set; }
         public string Nombre { get; set; }
         public string Imagen { get; set; }
@@ -19,6 +15,7 @@ namespace Domain.Models
         public DateTime? FechaMod { get; set; }
         public DateTime? FechaFin { get; set; }
 
+        [JsonIgnore]
         public virtual ICollection<Bannerdetalle> Bannerdetalle { get; set; }
     }
 }

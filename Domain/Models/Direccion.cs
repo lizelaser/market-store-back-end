@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace Domain.Models
 {
     public partial class Direccion
     {
-        public Direccion()
-        {
-            Ordencompra = new HashSet<Ordencompra>();
-        }
-
         public int Id { get; set; }
         public int ClienteId { get; set; }
         public string Direccion1 { get; set; }
@@ -19,6 +14,7 @@ namespace Domain.Models
         public string Referencia { get; set; }
         public bool Defecto { get; set; }
 
+        [JsonIgnore]
         public virtual ICollection<Ordencompra> Ordencompra { get; set; }
     }
 }

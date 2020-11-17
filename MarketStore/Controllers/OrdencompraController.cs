@@ -25,7 +25,7 @@ namespace MarketStore.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Ordencompra>>> GetOrdencompra()
         {
-            return await _context.Ordencompra.ToListAsync();
+            return await _context.Ordencompra.Include(oc => oc.Direccion).ToListAsync();
         }
 
         // GET: api/Ordencompra/5
