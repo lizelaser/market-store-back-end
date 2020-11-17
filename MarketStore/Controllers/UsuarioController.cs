@@ -25,7 +25,7 @@ namespace MarketStore.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Usuario>>> GetUsuario()
         {
-            return await _context.Usuario.ToListAsync();
+            return await _context.Usuario.Include(u => u.Rol).ToListAsync();
         }
 
         // GET: api/Usuario/5

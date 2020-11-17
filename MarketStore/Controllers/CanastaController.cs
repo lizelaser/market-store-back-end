@@ -86,17 +86,26 @@ namespace MarketStore.Controllers
         [Authorize(Policy = "AdminOnly")]
         public async Task<ActionResult<Canasta>> PostCanasta(Canasta canasta)
         {
-            (bool success, string path) t = Conversor.SaveImage(_env.ContentRootPath, canasta.Imagen);
-            if (t.success && t.path != null)
+            try
             {
-                canasta.Imagen = t.path;
+                canasta.Imagen = Conversor.SaveImage(_env.ContentRootPath, canasta.Imagen);
+            }
+            catch (ConversorException e)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
+            }
 
+            try
+            {
                 _context.Canasta.Add(canasta);
                 await _context.SaveChangesAsync();
 
                 return CreatedAtAction("GetCanasta", new { id = canasta.Id }, canasta);
             }
-            return StatusCode(StatusCodes.Status400BadRequest, t.path);
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
         }
 
         // DELETE: api/Canasta/5

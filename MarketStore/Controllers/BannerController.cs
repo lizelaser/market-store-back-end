@@ -86,18 +86,26 @@ namespace MarketStore.Controllers
         [Authorize(Policy = "AdminOnly")]
         public async Task<ActionResult<Banner>> PostBanner(Banner banner)
         {
-            (bool success, string path) t = Conversor.SaveImage(_env.ContentRootPath, banner.Imagen);
-            if (t.success && t.path != null)
+            try
             {
-                banner.Imagen = t.path;
+                banner.Imagen = Conversor.SaveImage(_env.ContentRootPath, banner.Imagen);
+            }
+            catch (ConversorException e)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
+            }
 
+            try
+            {
                 _context.Banner.Add(banner);
                 await _context.SaveChangesAsync();
 
                 return CreatedAtAction("GetBanner", new { id = banner.Id }, banner);
             }
-            return StatusCode(StatusCodes.Status400BadRequest, t.path);
-
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
         }
 
         // DELETE: api/Banner/5

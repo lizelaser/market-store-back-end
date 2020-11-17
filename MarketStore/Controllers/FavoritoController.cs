@@ -33,14 +33,14 @@ namespace MarketStore.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Favorito>> GetFavorito(int id)
         {
-            var favorito = await _context.Favorito.FindAsync(id);
+            var favorito = await _context.Favorito.Include(f => f.Producto).SingleOrDefaultAsync(f => f.Id == id);
 
             if (favorito == null)
             {
                 return NotFound();
             }
 
-            return favorito;
+            return Ok(favorito);
         }
 
         // PUT: api/Favorito/5

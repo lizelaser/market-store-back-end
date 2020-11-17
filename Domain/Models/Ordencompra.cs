@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
 namespace Domain.Models
@@ -18,7 +17,6 @@ namespace Domain.Models
 
         [JsonIgnore]
         public virtual Carrito Carrito { get; set; }
-        [JsonIgnore]
         public virtual Direccion Direccion { get; set; }
         [JsonIgnore]
         public virtual ICollection<Ordencompradetalle> Ordencompradetalle { get; set; }
