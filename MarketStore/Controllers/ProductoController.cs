@@ -11,6 +11,7 @@ using javax.jws;
 using System.IO;
 using Microsoft.AspNetCore.Hosting;
 using MarketStore.Utilities;
+using MarketStore.Models;
 
 namespace MarketStore.Controllers
 {
@@ -20,6 +21,7 @@ namespace MarketStore.Controllers
     {
         private readonly MARKETSTOREContext _context;
         private IWebHostEnvironment _env;
+        private readonly int RegistrosPorPagina = 12;
 
         public ProductoController(MARKETSTOREContext context, IWebHostEnvironment env)
         {
@@ -32,6 +34,66 @@ namespace MarketStore.Controllers
         public async Task<ActionResult<IEnumerable<Producto>>> GetProducto()
         {
             return await _context.Producto.Include(x=>x.Categoria).ToListAsync();
+        }
+
+
+        [Route("[action]")]
+        [HttpGet]
+        public ActionResult Tabla(int pagina=1, int categoria=0, decimal preciomin=0, decimal preciomax=9999)
+        {
+            int TotalRegistros;
+            int TotalPaginas;
+            
+            List<Producto> Productos;
+            Paginador<ProductoVm> ListadoProductos;
+
+            try
+            {
+                // Total number of records in the student table
+                //TotalRegistros = _context.Producto.Count();
+                // We get the 'records page' from the student table
+                 var pinga = _context.Producto.OrderBy(x => x.Id)
+                                            .Include(x => x.Categoria)
+                                            .Where(x => categoria != 0 ? x.CategoriaId == categoria : true)
+                                            .Skip((pagina - 1) * RegistrosPorPagina)
+                                            .Take(RegistrosPorPagina)
+                                            .Where(x=>x.Precio>=preciomin && x.Precio<=preciomax);
+               
+                
+                TotalRegistros = pinga.Count();
+                Productos = pinga.ToList();
+                // Total number of pages in the student table
+                TotalPaginas = (int)Math.Ceiling((double)TotalRegistros / RegistrosPorPagina);
+            } catch (Exception e)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
+            }
+            
+
+            //We list "Especialidad" only with the required fields to avoid serialization problems
+            var SubProductos = Productos.Select(S => new ProductoVm
+            {
+                Id = S.Id,
+                Nombre = S.Nombre,
+                Precio = S.Precio,
+                Stock = S.Stock,
+                Medida = S.Medida,
+                Imagen = S.Imagen
+
+            }).ToList();
+
+            // We instantiate the 'Paging class' and assign the new values
+            ListadoProductos = new Paginador<ProductoVm>()
+            {
+                RegistrosPorPagina = RegistrosPorPagina,
+                TotalRegistros = TotalRegistros,
+                TotalPaginas = TotalPaginas,
+                PaginaActual = pagina,
+                Listado = SubProductos
+            };
+
+            //we send the pagination class to the view
+            return Ok(ListadoProductos);
         }
 
         // GET: api/Producto/5
