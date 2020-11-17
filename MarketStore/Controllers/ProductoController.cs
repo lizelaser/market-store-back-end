@@ -7,10 +7,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Domain.Models;
 using Microsoft.AspNetCore.Authorization;
-using javax.jws;
-using System.IO;
 using Microsoft.AspNetCore.Hosting;
 using MarketStore.Utilities;
+using Microsoft.AspNetCore.Http.Extensions;
 
 namespace MarketStore.Controllers
 {
@@ -38,13 +37,14 @@ namespace MarketStore.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Producto>> GetProducto(int id)
         {
-            var producto = await _context.Producto.FindAsync(id);
+            Producto producto = await _context.Producto.FindAsync(id);
 
             if (producto == null)
             {
                 return NotFound();
             }
 
+            producto.Imagen = $"{Request.Scheme}://{Request.Host}/images/{producto.Imagen}";
             return producto;
         }
 
