@@ -18,7 +18,7 @@ namespace MarketStore.Controllers
     {
         
         private readonly MARKETSTOREContext _context;
-        private IWebHostEnvironment _env;
+        private readonly IWebHostEnvironment _env;
 
         public CanastaController(MARKETSTOREContext context, IWebHostEnvironment env)
         {
@@ -30,7 +30,9 @@ namespace MarketStore.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Canasta>>> GetCanasta()
         {
-            return await _context.Canasta.ToListAsync();
+            var canastas = await _context.Canasta.ToListAsync();
+            ImagenUtilidad.CrearImagenUrls(canastas, Request);
+            return canastas;
         }
 
         // GET: api/Canasta/5
@@ -44,6 +46,7 @@ namespace MarketStore.Controllers
                 return NotFound();
             }
 
+            ImagenUtilidad.CrearImagenUrl(canasta, Request);
             return canasta;
         }
 
@@ -88,9 +91,9 @@ namespace MarketStore.Controllers
         {
             try
             {
-                canasta.Imagen = Conversor.SaveImage(_env.ContentRootPath, canasta.Imagen);
+                canasta.Imagen = ImagenUtilidad.GuardarImagen(_env.ContentRootPath, canasta.Imagen);
             }
-            catch (ConversorException e)
+            catch (ImagenUtilidadException e)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
             }
