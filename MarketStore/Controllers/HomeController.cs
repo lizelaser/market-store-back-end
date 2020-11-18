@@ -15,7 +15,7 @@ namespace MarketStore.Controllers
     {
 
         [HttpGet]
-        public String Get()
+        public string Get()
         {
             return "Hello World";
         }

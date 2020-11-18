@@ -17,7 +17,7 @@ namespace MarketStore.Controllers
     public class CategoriaController : ControllerBase
     {
         private readonly MARKETSTOREContext _context;
-        private IWebHostEnvironment _env;
+        private readonly IWebHostEnvironment _env;
 
         public CategoriaController(MARKETSTOREContext context, IWebHostEnvironment env)
         {
@@ -29,7 +29,9 @@ namespace MarketStore.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Categoria>>> GetCategoria()
         {
-            return await _context.Categoria.ToListAsync();
+            var categorias =  await _context.Categoria.ToListAsync();
+            ImagenUtilidad.CrearImagenUrls(categorias, Request);
+            return categorias;
         }
 
         // GET: api/Categoria/5
@@ -44,6 +46,7 @@ namespace MarketStore.Controllers
                 return NotFound();
             }
 
+            ImagenUtilidad.CrearImagenUrl(categoria, Request);
             return categoria;
         }
 
@@ -89,9 +92,9 @@ namespace MarketStore.Controllers
         {
             try
             {
-                categoria.Imagen = Conversor.SaveImage(_env.ContentRootPath, categoria.Imagen);
+                categoria.Imagen = ImagenUtilidad.GuardarImagen(_env.ContentRootPath, categoria.Imagen);
             }
-            catch (ConversorException e)
+            catch (ImagenUtilidadException e)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
             }

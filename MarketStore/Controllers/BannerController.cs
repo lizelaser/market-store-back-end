@@ -9,6 +9,7 @@ using Domain.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using MarketStore.Utilities;
+using Microsoft.VisualBasic;
 
 namespace MarketStore.Controllers
 {
@@ -17,7 +18,7 @@ namespace MarketStore.Controllers
     public class BannerController : ControllerBase
     {
         private readonly MARKETSTOREContext _context;
-        private IWebHostEnvironment _env;
+        private readonly IWebHostEnvironment _env;
 
         public BannerController(MARKETSTOREContext context, IWebHostEnvironment env)
         {
@@ -29,7 +30,9 @@ namespace MarketStore.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Banner>>> GetBanner()
         {
-            return await _context.Banner.ToListAsync();
+            var banners = await _context.Banner.ToListAsync();
+            ImagenUtilidad.CrearImagenUrls(banners, Request);
+            return banners;
         }
 
         // GET: api/Banner/5
@@ -43,6 +46,7 @@ namespace MarketStore.Controllers
                 return NotFound();
             }
 
+            ImagenUtilidad.CrearImagenUrl(banner, Request);
             return banner;
         }
 
@@ -88,9 +92,9 @@ namespace MarketStore.Controllers
         {
             try
             {
-                banner.Imagen = Conversor.SaveImage(_env.ContentRootPath, banner.Imagen);
+                banner.Imagen = ImagenUtilidad.GuardarImagen(_env.ContentRootPath, banner.Imagen);
             }
-            catch (ConversorException e)
+            catch (ImagenUtilidadException e)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
             }

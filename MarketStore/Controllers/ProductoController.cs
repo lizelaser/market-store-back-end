@@ -19,8 +19,8 @@ namespace MarketStore.Controllers
     public class ProductoController : ControllerBase
     {
         private readonly MARKETSTOREContext _context;
-        private IWebHostEnvironment _env;
-        private readonly int RegistrosPorPagina = 12;
+        private readonly IWebHostEnvironment _env;
+        private const int RegistrosPorPagina = 12;
 
         public ProductoController(MARKETSTOREContext context, IWebHostEnvironment env)
         {
@@ -32,7 +32,9 @@ namespace MarketStore.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Producto>>> GetProducto()
         {
-            return await _context.Producto.Include(x=>x.Categoria).ToListAsync();
+             var items = await _context.Producto.Include(x=>x.Categoria).ToListAsync();
+             ImagenUtilidad.CrearImagenUrls(items, Request);
+             return Ok(items);
         }
 
 
@@ -40,59 +42,46 @@ namespace MarketStore.Controllers
         [HttpGet]
         public ActionResult Tabla(int pagina=1, int categoria=0, decimal preciomin=0, decimal preciomax=9999)
         {
-            int TotalRegistros;
-            int TotalPaginas;
+            int totalRegistros;
+            int totalPaginas;
             
-            List<Producto> Productos;
-            Paginador<ProductoVm> ListadoProductos;
+            List<Producto> productos;
 
             try
             {
                 // Total number of records in the student table
                 //TotalRegistros = _context.Producto.Count();
                 // We get the 'records page' from the student table
-                 var pinga = _context.Producto.OrderBy(x => x.Id)
+                 var productosQuery = _context.Producto.OrderBy(x => x.Id)
                                             .Include(x => x.Categoria)
-                                            .Where(x => categoria != 0 ? x.CategoriaId == categoria : true)
+                                            .Where(x => categoria == 0 || x.CategoriaId == categoria)
                                             .Skip((pagina - 1) * RegistrosPorPagina)
                                             .Take(RegistrosPorPagina)
                                             .Where(x=>x.Precio>=preciomin && x.Precio<=preciomax);
                
                 
-                TotalRegistros = pinga.Count();
-                Productos = pinga.ToList();
+                totalRegistros = productosQuery.Count();
+                productos = productosQuery.ToList();
                 // Total number of pages in the student table
-                TotalPaginas = (int)Math.Ceiling((double)TotalRegistros / RegistrosPorPagina);
+                totalPaginas = (int) Math.Ceiling((double)totalRegistros / RegistrosPorPagina);
             } catch (Exception e)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
             }
-            
 
-            //We list "Especialidad" only with the required fields to avoid serialization problems
-            var SubProductos = Productos.Select(S => new ProductoVm
-            {
-                Id = S.Id,
-                Nombre = S.Nombre,
-                Precio = S.Precio,
-                Stock = S.Stock,
-                Medida = S.Medida,
-                Imagen = S.Imagen
-
-            }).ToList();
-
+            ImagenUtilidad.CrearImagenUrls(productos, Request);
             // We instantiate the 'Paging class' and assign the new values
-            ListadoProductos = new Paginador<ProductoVm>()
+            Paginador<Producto> listadoProductos = new Paginador<Producto>()
             {
                 RegistrosPorPagina = RegistrosPorPagina,
-                TotalRegistros = TotalRegistros,
-                TotalPaginas = TotalPaginas,
+                TotalRegistros = totalRegistros,
+                TotalPaginas = totalPaginas,
                 PaginaActual = pagina,
-                Listado = SubProductos
+                Listado = productos
             };
 
             //we send the pagination class to the view
-            return Ok(ListadoProductos);
+            return Ok(listadoProductos);
         }
 
         // GET: api/Producto/5
@@ -106,7 +95,7 @@ namespace MarketStore.Controllers
                 return NotFound();
             }
 
-            producto.Imagen = $"{Request.Scheme}://{Request.Host}/images/{producto.Imagen}";
+            ImagenUtilidad.CrearImagenUrl(producto, Request);
             return producto;
         }
 
@@ -124,12 +113,12 @@ namespace MarketStore.Controllers
 
             try
             {
-                producto.Imagen = Conversor.SaveImage(_env.ContentRootPath, producto.Imagen);
+                producto.Imagen = ImagenUtilidad.GuardarImagen(_env.ContentRootPath, producto.Imagen);
 
                 _context.Entry(producto).State = EntityState.Modified;
                 await _context.SaveChangesAsync();
             }
-            catch (ConversorException e)
+            catch (ImagenUtilidadException e)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
             }
@@ -157,15 +146,15 @@ namespace MarketStore.Controllers
         {
             try
             {
-                producto.Imagen = Conversor.SaveImage(_env.ContentRootPath, producto.Imagen);
-            } catch (ConversorException e)
+                producto.Imagen = ImagenUtilidad.GuardarImagen(_env.ContentRootPath, producto.Imagen);
+            } catch (ImagenUtilidadException e)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
             }
 
             try
             {
-                _context.Producto.Add(producto);
+                await _context.Producto.AddAsync(producto);
                 await _context.SaveChangesAsync();
 
                 return CreatedAtAction("GetProducto", new { id = producto.Id }, producto);
@@ -196,8 +185,5 @@ namespace MarketStore.Controllers
         {
             return _context.Producto.Any(e => e.Id == id);
         }
-
-        
-
     }
 }
