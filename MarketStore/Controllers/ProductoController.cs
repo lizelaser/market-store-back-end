@@ -32,19 +32,19 @@ namespace MarketStore.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Producto>>> GetProducto()
         {
-             var items = await _context.Producto.Include(x=>x.Categoria).ToListAsync();
-             ImagenUtilidad.CrearImagenUrls(items, Request);
-             return Ok(items);
+            var items = await _context.Producto.Include(x => x.Categoria).ToListAsync();
+            ImagenUtilidad.CrearImagenUrls(items, Request);
+            return Ok(items);
         }
 
 
         [Route("[action]")]
         [HttpGet]
-        public ActionResult Tabla(int pagina=1, int categoria=0, decimal preciomin=0, decimal preciomax=9999)
+        public ActionResult Tabla(int pagina = 1, int categoria = 0, decimal precioMin = 0, decimal precioMax = 9999)
         {
             int totalRegistros;
             int totalPaginas;
-            
+
             List<Producto> productos;
 
             try
@@ -52,19 +52,20 @@ namespace MarketStore.Controllers
                 // Total number of records in the student table
                 //TotalRegistros = _context.Producto.Count();
                 // We get the 'records page' from the student table
-                 var productosQuery = _context.Producto.OrderBy(x => x.Id)
-                                            .Include(x => x.Categoria)
-                                            .Where(x => categoria == 0 || x.CategoriaId == categoria)
-                                            .Skip((pagina - 1) * RegistrosPorPagina)
-                                            .Take(RegistrosPorPagina)
-                                            .Where(x=>x.Precio>=preciomin && x.Precio<=preciomax);
-               
-                
+                var productosQuery = _context.Producto.OrderBy(x => x.Id)
+                                           .Include(x => x.Categoria)
+                                           .Where(x => categoria == 0 || x.CategoriaId == categoria)
+                                           .Skip((pagina - 1) * RegistrosPorPagina)
+                                           .Take(RegistrosPorPagina)
+                                           .Where(x => x.Precio >= precioMin && x.Precio <= precioMax);
+
+
                 totalRegistros = productosQuery.Count();
                 productos = productosQuery.ToList();
                 // Total number of pages in the student table
-                totalPaginas = (int) Math.Ceiling((double)totalRegistros / RegistrosPorPagina);
-            } catch (Exception e)
+                totalPaginas = (int)Math.Ceiling((double)totalRegistros / RegistrosPorPagina);
+            }
+            catch (Exception e)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
             }
@@ -147,7 +148,8 @@ namespace MarketStore.Controllers
             try
             {
                 producto.Imagen = ImagenUtilidad.GuardarImagen(_env.ContentRootPath, producto.Imagen);
-            } catch (ImagenUtilidadException e)
+            }
+            catch (ImagenUtilidadException e)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
             }
@@ -158,7 +160,8 @@ namespace MarketStore.Controllers
                 await _context.SaveChangesAsync();
 
                 return CreatedAtAction("GetProducto", new { id = producto.Id }, producto);
-            } catch (Exception e)
+            }
+            catch (Exception e)
             {
                 return BadRequest(e.Message);
             }

@@ -1,17 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Domain.Models;
-
+using Microsoft.AspNetCore.Authorization;
+using System;
+using MarketStore.Models;
+using System.Security.Claims;
 
 namespace MarketStore.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Policy = "CustomerOnly")]
     public class OrdencompraController : ControllerBase
     {
         private readonly MARKETSTOREContext _context;
@@ -25,6 +27,16 @@ namespace MarketStore.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Ordencompra>>> GetOrdencompra()
         {
+            int clienteId;
+            try
+            {
+                clienteId = int.Parse(User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value);
+            }
+            catch (Exception error)
+            {
+                return Unauthorized(error.Message);
+            }
+
             return await _context.Ordencompra.Include(oc => oc.Direccion).ToListAsync();
         }
 
@@ -78,12 +90,66 @@ namespace MarketStore.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
-        public async Task<ActionResult<Ordencompra>> PostOrdencompra(Ordencompra ordencompra)
+        public async Task<ActionResult<Ordencompra>> PostOrdencompra(ProductoVm3 input)
         {
-            _context.Ordencompra.Add(ordencompra);
+            Carrito carrito = new Carrito();
+            carrito.UsuarioId = int.Parse(User.Identity.Name);
+            carrito.FechaReg = DateTime.Now;
+            carrito.FechaMod = DateTime.Now;
+            carrito.Estado = true;
+
+            _context.Carrito.Add(carrito);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetOrdencompra", new { id = ordencompra.Id }, ordencompra);
+            decimal total = 0.0m;
+
+            input.Productos.ForEach((p) =>
+            {
+                decimal total0;
+
+                Carritoproducto cp = new Carritoproducto();
+                cp.CarritoId = carrito.Id;
+                cp.ProductoId = p.Id;
+                cp.Cantidad = p.Cantidad;
+
+                total0 = p.Cantidad * p.Precio;
+                cp.Subtotal = total0;
+
+                total += total0;
+
+                _context.Carritoproducto.Add(cp);
+            });
+
+
+            Ordencompra oc = new Ordencompra();
+            oc.CarritoId = carrito.Id;
+            oc.DireccionId = input.DireccionId;
+            oc.NroOrdenCompra = (new Guid()).ToString();
+            oc.Moneda = "PEN";
+
+            oc.Total = total;
+            oc.Subtotal = oc.Total / 1.18m;
+            oc.Impuesto = oc.Total - oc.Subtotal;
+
+            oc.PrecioEnvio = 5.0m;
+
+            _context.Ordencompra.Add(oc);
+            await _context.SaveChangesAsync();
+
+            input.Productos.ForEach((p) =>
+            {
+                Ordencompradetalle ocd = new Ordencompradetalle();
+                ocd.ProductoId = p.Id;
+                ocd.OrdenCompraId = oc.Id;
+                ocd.Subtotal = p.Cantidad * p.Precio;
+                ocd.GastoEnvio = 5.0m;
+
+                _context.Ordencompradetalle.Add(ocd);
+            });
+
+            await _context.SaveChangesAsync();
+
+            return CreatedAtAction("GetOrdencompra", new { id = oc.Id }, input);
         }
 
         // DELETE: api/Ordencompra/5

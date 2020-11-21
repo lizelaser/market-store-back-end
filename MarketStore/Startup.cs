@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Domain.Models;
+using System.Security.Claims;
 
 namespace MarketStore
 {
@@ -45,8 +46,8 @@ namespace MarketStore
 
             services.AddAuthorization(auth =>
             {
-                auth.AddPolicy("AdminOnly", policy => policy.RequireRole(System.Security.Claims.ClaimTypes.Role, "1"));
-                auth.AddPolicy("CustomerOnly", policy => policy.RequireRole(System.Security.Claims.ClaimTypes.Role, "2"));
+                auth.AddPolicy("AdminOnly", policy => policy.RequireRole(ClaimTypes.Role, "1"));
+                auth.AddPolicy("CustomerOnly", policy => policy.RequireRole(ClaimTypes.Role, "2"));
             });
 
             services.AddDbContext<MARKETSTOREContext>(db => db.UseSqlServer(Configuration.GetConnectionString("connectionDB")));
@@ -62,7 +63,7 @@ namespace MarketStore
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseHttpsRedirection();
+            // app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseRouting();
 

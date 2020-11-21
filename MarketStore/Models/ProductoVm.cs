@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace MarketStore.Models
 {
@@ -13,5 +10,19 @@ namespace MarketStore.Models
         public int Stock { get; set; }
         public string Medida { get; set; }
         public string Imagen { get; set; }
+    }
+
+    public class ProductoVm2
+    {
+        public int Id { get; set; }
+        public int Cantidad { get; set; }
+
+        public decimal Precio { get; set; }
+    }
+
+    public class ProductoVm3
+    {
+        public List<ProductoVm2> Productos { get; set; }
+        public int DireccionId { get; set; }
     }
 }
