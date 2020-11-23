@@ -2,10 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
-using Domain.Models;
 using Microsoft.AspNetCore.Http;
 
 namespace MarketStore.Utilities
@@ -31,7 +28,8 @@ namespace MarketStore.Utilities
                 bm2.Save(dirPath, System.Drawing.Imaging.ImageFormat.Jpeg);
 
                 return filePath;
-            } catch (Exception e)
+            }
+            catch (Exception e)
             {
                 throw new ImagenUtilidadException(e.Message);
             }
@@ -43,9 +41,9 @@ namespace MarketStore.Utilities
 
             if (prop is null || !prop.CanWrite) return;
 
-            string imagen = (string) prop.GetValue(item);
+            string imagen = (string)prop.GetValue(item);
             string url = $"{request.Scheme}://{request.Host}/{ImagePathSlice}/{imagen}";
-            
+
             prop.SetValue(item, url, null);
         }
 
@@ -59,7 +57,7 @@ namespace MarketStore.Utilities
 
                 if (prop is null || !prop.CanWrite) continue;
 
-                string imagen = (string) prop.GetValue(item);
+                string imagen = (string)prop.GetValue(item);
                 string url = $"{left}{imagen}";
 
                 prop.SetValue(item, url, null);

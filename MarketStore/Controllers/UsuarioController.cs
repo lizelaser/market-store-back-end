@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Domain.Models;
@@ -103,7 +101,7 @@ namespace MarketStore.Controllers
 
         // DELETE: api/Usuario/5
         [HttpDelete("{id}")]
-        [Authorize(Policy ="AdminOnly")]
+        [Authorize(Policy = "AdminOnly")]
         public async Task<ActionResult<Usuario>> DeleteUsuario(int id)
         {
             var usuario = await _context.Usuario.FindAsync(id);

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace MarketStore.Models
+﻿namespace MarketStore.Models
 {
     public class RegistroUsuarioVm
     {
