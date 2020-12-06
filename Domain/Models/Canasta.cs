@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
+#nullable disable
+
 namespace Domain.Models
 {
     public partial class Canasta
@@ -13,6 +15,7 @@ namespace Domain.Models
         public DateTime FechaReg { get; set; }
         public DateTime? FechaMod { get; set; }
         public DateTime? FechaFin { get; set; }
+        public decimal? Precio { get; set; }
 
         [JsonIgnore]
         public virtual ICollection<Canastadetalle> Canastadetalle { get; set; }

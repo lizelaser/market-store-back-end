@@ -1,6 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using System;
+﻿using System;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
+
+#nullable disable
 
 namespace Domain.Models
 {
@@ -26,22 +28,22 @@ namespace Domain.Models
         public virtual DbSet<Direccion> Direccion { get; set; }
         public virtual DbSet<Especificacion> Especificacion { get; set; }
         public virtual DbSet<Favorito> Favorito { get; set; }
+        public virtual DbSet<Menu> Menu { get; set; }
         public virtual DbSet<Ordencompra> Ordencompra { get; set; }
         public virtual DbSet<Ordencompradetalle> Ordencompradetalle { get; set; }
+        public virtual DbSet<Permiso> Permiso { get; set; }
         public virtual DbSet<Producto> Producto { get; set; }
         public virtual DbSet<Rol> Rol { get; set; }
+        public virtual DbSet<RolMenu> RolMenu { get; set; }
+        public virtual DbSet<RolPermiso> RolPermiso { get; set; }
         public virtual DbSet<Usuario> Usuario { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
             {
-                Console.WriteLine(System.IO.Directory.GetCurrentDirectory());
-                IConfigurationRoot configuration = new ConfigurationBuilder()
-                    .SetBasePath(System.IO.Directory.GetCurrentDirectory())
-                    .AddJsonFile("appsettings.json")
-                    .Build();
-                optionsBuilder.UseSqlServer("Name=connectionDB");
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
+                optionsBuilder.UseSqlServer("Data source=.; Initial Catalog=MARKETSTORE; integrated security=TRUE;");
             }
         }
 
@@ -110,6 +112,8 @@ namespace Domain.Models
                     .IsRequired()
                     .HasMaxLength(64)
                     .IsUnicode(false);
+
+                entity.Property(e => e.Precio).HasColumnType("decimal(10, 2)");
             });
 
             modelBuilder.Entity<Canastadetalle>(entity =>
@@ -216,9 +220,9 @@ namespace Domain.Models
 
                 entity.Property(e => e.Direccion1)
                     .IsRequired()
-                    .HasColumnName("Direccion")
                     .HasMaxLength(256)
-                    .IsUnicode(false);
+                    .IsUnicode(false)
+                    .HasColumnName("Direccion");
 
                 entity.Property(e => e.Numero)
                     .IsRequired()
@@ -272,6 +276,24 @@ namespace Domain.Models
                     .HasConstraintName("FK__FAVORITO__Usuari__5812160E");
             });
 
+            modelBuilder.Entity<Menu>(entity =>
+            {
+                entity.ToTable("MENU");
+
+                entity.Property(e => e.Denominacion)
+                    .IsRequired()
+                    .HasMaxLength(255)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Icono)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Ruta)
+                    .HasMaxLength(255)
+                    .IsUnicode(false);
+            });
+
             modelBuilder.Entity<Ordencompra>(entity =>
             {
                 entity.ToTable("ORDENCOMPRA");
@@ -282,7 +304,7 @@ namespace Domain.Models
                     .IsRequired()
                     .HasMaxLength(3)
                     .IsUnicode(false)
-                    .IsFixedLength();
+                    .IsFixedLength(true);
 
                 entity.Property(e => e.NroOrdenCompra)
                     .IsRequired()
@@ -329,6 +351,30 @@ namespace Domain.Models
                     .HasConstraintName("FK__ORDENCOMP__Produ__6FE99F9F");
             });
 
+            modelBuilder.Entity<Permiso>(entity =>
+            {
+                entity.ToTable("PERMISO");
+
+                entity.Property(e => e.Accion)
+                    .IsRequired()
+                    .HasMaxLength(128)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Controlador)
+                    .IsRequired()
+                    .HasMaxLength(128)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Descripcion)
+                    .IsRequired()
+                    .HasMaxLength(512)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Protegido)
+                    .IsRequired()
+                    .HasDefaultValueSql("((1))");
+            });
+
             modelBuilder.Entity<Producto>(entity =>
             {
                 entity.ToTable("PRODUCTO");
@@ -356,7 +402,7 @@ namespace Domain.Models
                     .IsRequired()
                     .HasMaxLength(20)
                     .IsUnicode(false)
-                    .IsFixedLength();
+                    .IsFixedLength(true);
 
                 entity.Property(e => e.Nombre)
                     .IsRequired()
@@ -386,6 +432,40 @@ namespace Domain.Models
                     .IsRequired()
                     .HasMaxLength(64)
                     .IsUnicode(false);
+            });
+
+            modelBuilder.Entity<RolMenu>(entity =>
+            {
+                entity.ToTable("ROL_MENU");
+
+                entity.HasOne(d => d.Menu)
+                    .WithMany(p => p.RolMenu)
+                    .HasForeignKey(d => d.MenuId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("Menu_RolMenu_FK");
+
+                entity.HasOne(d => d.Rol)
+                    .WithMany(p => p.RolMenu)
+                    .HasForeignKey(d => d.RolId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("Rol_RolMenu_FK");
+            });
+
+            modelBuilder.Entity<RolPermiso>(entity =>
+            {
+                entity.ToTable("ROL_PERMISO");
+
+                entity.HasOne(d => d.Permiso)
+                    .WithMany(p => p.RolPermiso)
+                    .HasForeignKey(d => d.PermisoId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("accion_FK");
+
+                entity.HasOne(d => d.Rol)
+                    .WithMany(p => p.RolPermiso)
+                    .HasForeignKey(d => d.RolId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("rol_FK");
             });
 
             modelBuilder.Entity<Usuario>(entity =>

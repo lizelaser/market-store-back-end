@@ -1,4 +1,8 @@
-﻿using System.Text.Json.Serialization;
+﻿using System;
+using System.Collections.Generic;
+using System.Text.Json.Serialization;
+
+#nullable disable
 
 namespace Domain.Models
 {

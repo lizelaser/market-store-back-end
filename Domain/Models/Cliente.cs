@@ -1,4 +1,10 @@
-﻿namespace Domain.Models
+﻿using System;
+using System.Collections.Generic;
+using System.Text.Json.Serialization;
+
+#nullable disable
+
+namespace Domain.Models
 {
     public partial class Cliente
     {
@@ -9,6 +15,7 @@
         public string Telefono { get; set; }
         public bool? Estado { get; set; }
 
+        [JsonIgnore]
         public virtual Usuario Usuario { get; set; }
     }
 }

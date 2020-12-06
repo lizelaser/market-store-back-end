@@ -69,7 +69,7 @@ namespace MarketStore
 
             app.UseAuthentication();
             app.UseAuthorization();
-
+            app.UsePermisoMiddleware();
             app.UseCors(cors => cors.AllowAnyMethod().AllowAnyHeader().SetIsOriginAllowed(origin => true).AllowCredentials());
 
             app.UseEndpoints(end =>

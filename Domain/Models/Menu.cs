@@ -6,13 +6,14 @@ using System.Text.Json.Serialization;
 
 namespace Domain.Models
 {
-    public partial class Categoria
+    public partial class Menu
     {
         public int Id { get; set; }
         public string Denominacion { get; set; }
-        public string Imagen { get; set; }
+        public string Icono { get; set; }
+        public string Ruta { get; set; }
 
         [JsonIgnore]
-        public virtual ICollection<Producto> Producto { get; set; }
+        public virtual ICollection<RolMenu> RolMenu { get; set; }
     }
 }

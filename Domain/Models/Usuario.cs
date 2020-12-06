@@ -2,17 +2,12 @@
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
+#nullable disable
+
 namespace Domain.Models
 {
     public partial class Usuario
     {
-        public Usuario()
-        {
-            Carrito = new HashSet<Carrito>();
-            Cliente = new HashSet<Cliente>();
-            Favorito = new HashSet<Favorito>();
-        }
-
         public int Id { get; set; }
         public int RolId { get; set; }
         public string Nombre { get; set; }
@@ -22,6 +17,7 @@ namespace Domain.Models
         public DateTime? FechaMod { get; set; }
         public bool? Estado { get; set; }
 
+        [JsonIgnore]
         public virtual Rol Rol { get; set; }
         [JsonIgnore]
         public virtual ICollection<Carrito> Carrito { get; set; }

@@ -2,10 +2,13 @@
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
+#nullable disable
+
 namespace Domain.Models
 {
     public partial class Carrito
     {
+
         public int Id { get; set; }
         public int UsuarioId { get; set; }
         public DateTime FechaReg { get; set; }
