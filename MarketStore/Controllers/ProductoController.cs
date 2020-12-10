@@ -104,7 +104,6 @@ namespace MarketStore.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPut("{id}")]
-        [Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> PutProducto(int id, Producto producto)
         {
             if (id != producto.Id)
@@ -142,7 +141,6 @@ namespace MarketStore.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
-        [Authorize(Policy = "AdminOnly")]
         public async Task<ActionResult<Producto>> PostProducto(Producto producto)
         {
             try
@@ -169,7 +167,6 @@ namespace MarketStore.Controllers
 
         // DELETE: api/Producto/5
         [HttpDelete("{id}")]
-        [Authorize(Policy = "AdminOnly")]
         public async Task<ActionResult<Producto>> DeleteProducto(int id)
         {
             var producto = await _context.Producto.FindAsync(id);

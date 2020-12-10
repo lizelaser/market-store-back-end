@@ -11,7 +11,6 @@ using Microsoft.AspNetCore.Authorization;
 namespace MarketStore.Controllers
 {
     [Route("api/[controller]")]
-    [Authorize(Policy = "AdminOnly")]
     [ApiController]
     public class RolController : ControllerBase
     {
@@ -59,6 +58,7 @@ namespace MarketStore.Controllers
             try
             {
                 await _context.SaveChangesAsync();
+                int rolid = rol.Id;
             }
             catch (DbUpdateConcurrencyException)
             {

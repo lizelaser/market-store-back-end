@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
+
 #nullable disable
 
 namespace Domain.Models
@@ -16,6 +17,7 @@ namespace Domain.Models
 
         [JsonIgnore]
         public virtual Carrito Carrito { get; set; }
+        [JsonIgnore]
         public virtual Producto Producto { get; set; }
     }
 }

@@ -54,7 +54,6 @@ namespace MarketStore.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPut("{id}")]
-        [Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> PutCanasta(int id, Canasta canasta)
         {
             if (id != canasta.Id)
@@ -86,7 +85,6 @@ namespace MarketStore.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
-        [Authorize(Policy = "AdminOnly")]
         public async Task<ActionResult<Canasta>> PostCanasta(Canasta canasta)
         {
             try
@@ -113,7 +111,6 @@ namespace MarketStore.Controllers
 
         // DELETE: api/Canasta/5
         [HttpDelete("{id}")]
-        [Authorize(Policy = "AdminOnly")]
         public async Task<ActionResult<Canasta>> DeleteCanasta(int id)
         {
             var canasta = await _context.Canasta.FindAsync(id);

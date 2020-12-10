@@ -54,7 +54,6 @@ namespace MarketStore.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPut("{id}")]
-        [Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> PutBanner(int id, Banner banner)
         {
             if (id != banner.Id)
@@ -87,7 +86,6 @@ namespace MarketStore.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
-        [Authorize(Policy = "AdminOnly")]
         public async Task<ActionResult<Banner>> PostBanner(Banner banner)
         {
             try
@@ -114,7 +112,6 @@ namespace MarketStore.Controllers
 
         // DELETE: api/Banner/5
         [HttpDelete("{id}")]
-        [Authorize(Policy = "AdminOnly")]
         public async Task<ActionResult<Banner>> DeleteBanner(int id)
         {
             var banner = await _context.Banner.FindAsync(id);

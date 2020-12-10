@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
+
 
 #nullable disable
 
@@ -12,6 +14,7 @@ namespace Domain.Models
         public int PermisoId { get; set; }
 
         public virtual Permiso Permiso { get; set; }
+ 
         public virtual Rol Rol { get; set; }
     }
 }

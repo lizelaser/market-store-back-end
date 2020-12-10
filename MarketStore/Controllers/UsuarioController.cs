@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Domain.Models;
 using Microsoft.AspNetCore.Authorization;
+using System;
+using Microsoft.AspNetCore.Http;
 
 namespace MarketStore.Controllers
 {
@@ -44,7 +46,6 @@ namespace MarketStore.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPut("{id}")]
-        [Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> PutUsuario(int id, Usuario usuario)
         {
             if (id != usuario.Id)
@@ -76,7 +77,7 @@ namespace MarketStore.Controllers
         // POST: api/Usuario
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
-        /*[HttpPost]
+        [HttpPost]
         public async Task<ActionResult<Usuario>> PostUsuario(Usuario usuario)
         {
             var dbuser = (from u in _context.Usuario where u.Nombre.Equals(usuario.Nombre) && u.Correo.Equals(usuario.Correo) select u).SingleOrDefault();
@@ -97,11 +98,10 @@ namespace MarketStore.Controllers
             }
 
             return BadRequest(new { error = "El usuario ya existe" });
-        }*/
+        }
 
         // DELETE: api/Usuario/5
         [HttpDelete("{id}")]
-        [Authorize(Policy = "AdminOnly")]
         public async Task<ActionResult<Usuario>> DeleteUsuario(int id)
         {
             var usuario = await _context.Usuario.FindAsync(id);

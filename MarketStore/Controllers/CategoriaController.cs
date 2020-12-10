@@ -36,7 +36,6 @@ namespace MarketStore.Controllers
 
         // GET: api/Categoria/5
         [HttpGet("{id}")]
-        [Authorize(Policy = "AdminOnly")]
         public async Task<ActionResult<Categoria>> GetCategoria(int id)
         {
             var categoria = await _context.Categoria.FindAsync(id);
@@ -54,7 +53,6 @@ namespace MarketStore.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPut("{id}")]
-        [Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> PutCategoria(int id, Categoria categoria)
         {
             if (id != categoria.Id)
@@ -87,7 +85,6 @@ namespace MarketStore.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
-        [Authorize(Policy = "AdminOnly")]
         public async Task<ActionResult<Categoria>> PostCategoria(Categoria categoria)
         {
             try
@@ -114,7 +111,6 @@ namespace MarketStore.Controllers
 
         // DELETE: api/Categoria/5
         [HttpDelete("{id}")]
-        [Authorize(Policy = "AdminOnly")]
         public async Task<ActionResult<Categoria>> DeleteCategoria(int id)
         {
             var categoria = await _context.Categoria.FindAsync(id);

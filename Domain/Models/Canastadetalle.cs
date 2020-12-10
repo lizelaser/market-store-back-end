@@ -14,6 +14,8 @@ namespace Domain.Models
 
         [JsonIgnore]
         public virtual Canasta Canasta { get; set; }
+
+        [JsonIgnore]
         public virtual Producto Producto { get; set; }
     }
 }

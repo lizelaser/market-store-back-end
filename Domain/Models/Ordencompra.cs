@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
+
 #nullable disable
 
 namespace Domain.Models
 {
     public partial class Ordencompra
     {
+
         public int Id { get; set; }
         public int CarritoId { get; set; }
         public int DireccionId { get; set; }

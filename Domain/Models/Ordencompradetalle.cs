@@ -16,6 +16,7 @@ namespace Domain.Models
 
         [JsonIgnore]
         public virtual Ordencompra OrdenCompra { get; set; }
+        [JsonIgnore]
         public virtual Producto Producto { get; set; }
     }
 }

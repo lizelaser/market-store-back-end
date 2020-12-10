@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
+
 #nullable disable
 
 namespace Domain.Models
@@ -14,6 +15,8 @@ namespace Domain.Models
         public string Descripcion { get; set; }
         public bool Protegido { get; set; }
 
+        [JsonIgnore]
+        public virtual ICollection<Menu> Menu { get; set; }
         [JsonIgnore]
         public virtual ICollection<RolPermiso> RolPermiso { get; set; }
     }

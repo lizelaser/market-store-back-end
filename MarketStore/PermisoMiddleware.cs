@@ -38,26 +38,24 @@ namespace MarketStore
                     }
                     else
                     {
-                        if (httpContext.User.Identity != null)
+                        if (httpContext.User.Identity?.Name != null)
                         {
-                            int usuarioId = int.Parse(httpContext.User.Identity.Name ?? string.Empty);
+                            int usuarioId = int.Parse(httpContext.User.Identity.Name);
                             Usuario usuario = await context.Usuario.FindAsync(usuarioId);
 
-                            List<Permiso> permisosUsuario = await context.RolPermiso
-                                .Include(x => x.Permiso)
-                                .Where(x => x.RolId == usuario.RolId)
-                                .Select(x => x.Permiso)
-                                .ToListAsync();
+                            RolPermiso permisoUsuario = await context.RolPermiso
+                                .Where(x => x.RolId == usuario.RolId && x.PermisoId == permisoRequerido.Id)
+                                .FirstOrDefaultAsync();
 
-                            if (permisosUsuario.Contains(permisoRequerido))
+                            if (permisoUsuario != null)
                             {
                                 await _next(httpContext);
                                 return;
                             }
 
-                            httpContext.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                            httpContext.Response.StatusCode = StatusCodes.Status403Forbidden;
                         }
-                        httpContext.Response.StatusCode = StatusCodes.Status409Conflict;
+                        httpContext.Response.StatusCode = StatusCodes.Status401Unauthorized;
                     }
                 }
                 else

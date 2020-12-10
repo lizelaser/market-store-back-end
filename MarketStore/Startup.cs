@@ -44,11 +44,6 @@ namespace MarketStore
                 };
             });
 
-            services.AddAuthorization(auth =>
-            {
-                auth.AddPolicy("AdminOnly", policy => policy.RequireRole(ClaimTypes.Role, "1"));
-                auth.AddPolicy("CustomerOnly", policy => policy.RequireRole(ClaimTypes.Role, "2"));
-            });
 
             services.AddDbContext<MARKETSTOREContext>(db => db.UseSqlServer(Configuration.GetConnectionString("connectionDB")));
             services.AddCors();
@@ -69,8 +64,8 @@ namespace MarketStore
 
             app.UseAuthentication();
             app.UseAuthorization();
-            app.UsePermisoMiddleware();
             app.UseCors(cors => cors.AllowAnyMethod().AllowAnyHeader().SetIsOriginAllowed(origin => true).AllowCredentials());
+            app.UsePermisoMiddleware();
 
             app.UseEndpoints(end =>
             {

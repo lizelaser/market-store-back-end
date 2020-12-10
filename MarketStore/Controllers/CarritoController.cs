@@ -12,7 +12,6 @@ using Microsoft.EntityFrameworkCore;
 namespace MarketStore.Controllers
 {
     [Route("api/[controller]")]
-    [Authorize(Policy = "CustomerOnly")]
     [ApiController]
     public class CarritoController : ControllerBase
     {
