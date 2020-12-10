@@ -28,13 +28,13 @@ namespace Domain.Models
         public virtual DbSet<Direccion> Direccion { get; set; }
         public virtual DbSet<Especificacion> Especificacion { get; set; }
         public virtual DbSet<Favorito> Favorito { get; set; }
-        public virtual DbSet<Menu> Menu { get; set; }
+        public virtual DbSet<Menugrupo> Menugrupo { get; set; }
         public virtual DbSet<Ordencompra> Ordencompra { get; set; }
         public virtual DbSet<Ordencompradetalle> Ordencompradetalle { get; set; }
         public virtual DbSet<Permiso> Permiso { get; set; }
         public virtual DbSet<Producto> Producto { get; set; }
         public virtual DbSet<Rol> Rol { get; set; }
-        public virtual DbSet<RolPermiso> RolPermiso { get; set; }
+        public virtual DbSet<Rolpermiso> Rolpermiso { get; set; }
         public virtual DbSet<Usuario> Usuario { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -275,36 +275,18 @@ namespace Domain.Models
                     .HasConstraintName("FK__FAVORITO__Usuari__5812160E");
             });
 
-            modelBuilder.Entity<Menu>(entity =>
+            modelBuilder.Entity<Menugrupo>(entity =>
             {
-                entity.ToTable("MENU");
+                entity.ToTable("MENUGRUPO");
 
                 entity.Property(e => e.Icono)
                     .HasMaxLength(64)
                     .IsUnicode(false);
 
                 entity.Property(e => e.Nombre)
-                    .HasMaxLength(50)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.Ruta)
-                    .HasMaxLength(255)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.Visible)
                     .IsRequired()
-                    .HasDefaultValueSql("((1))");
-
-                entity.HasOne(d => d.NivelNavigation)
-                    .WithMany(p => p.InverseNivelNavigation)
-                    .HasForeignKey(d => d.Nivel)
-                    .HasConstraintName("nivel_FK");
-
-                entity.HasOne(d => d.Permiso)
-                    .WithMany(p => p.Menu)
-                    .HasForeignKey(d => d.PermisoId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("permiso_menu_FK");
+                    .HasMaxLength(64)
+                    .IsUnicode(false);
             });
 
             modelBuilder.Entity<Ordencompra>(entity =>
@@ -379,13 +361,31 @@ namespace Domain.Models
                     .IsUnicode(false);
 
                 entity.Property(e => e.Descripcion)
-                    .IsRequired()
                     .HasMaxLength(512)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Nombre)
+                    .IsRequired()
+                    .HasMaxLength(50)
                     .IsUnicode(false);
 
                 entity.Property(e => e.Protegido)
                     .IsRequired()
                     .HasDefaultValueSql("((1))");
+
+                entity.Property(e => e.Ruta)
+                    .IsRequired()
+                    .HasMaxLength(255)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Visible)
+                    .IsRequired()
+                    .HasDefaultValueSql("((1))");
+
+                entity.HasOne(d => d.Menu)
+                    .WithMany(p => p.Permiso)
+                    .HasForeignKey(d => d.MenuId)
+                    .HasConstraintName("Menu_Permiso_FK");
             });
 
             modelBuilder.Entity<Producto>(entity =>
@@ -447,18 +447,18 @@ namespace Domain.Models
                     .IsUnicode(false);
             });
 
-            modelBuilder.Entity<RolPermiso>(entity =>
+            modelBuilder.Entity<Rolpermiso>(entity =>
             {
-                entity.ToTable("ROL_PERMISO");
+                entity.ToTable("ROLPERMISO");
 
                 entity.HasOne(d => d.Permiso)
-                    .WithMany(p => p.RolPermiso)
+                    .WithMany(p => p.Rolpermiso)
                     .HasForeignKey(d => d.PermisoId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("accion_FK");
+                    .HasConstraintName("permiso_FK");
 
                 entity.HasOne(d => d.Rol)
-                    .WithMany(p => p.RolPermiso)
+                    .WithMany(p => p.Rolpermiso)
                     .HasForeignKey(d => d.RolId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("rol_FK");

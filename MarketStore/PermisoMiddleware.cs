@@ -43,7 +43,7 @@ namespace MarketStore
                             int usuarioId = int.Parse(httpContext.User.Identity.Name);
                             Usuario usuario = await context.Usuario.FindAsync(usuarioId);
 
-                            RolPermiso permisoUsuario = await context.RolPermiso
+                            Rolpermiso permisoUsuario = await context.Rolpermiso
                                 .Where(x => x.RolId == usuario.RolId && x.PermisoId == permisoRequerido.Id)
                                 .FirstOrDefaultAsync();
 

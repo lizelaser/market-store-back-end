@@ -13,54 +13,55 @@ namespace MarketStore.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class MenuController : ControllerBase
+    public class PermisoController : ControllerBase
     {
         private readonly MARKETSTOREContext _context;
 
-        public MenuController(MARKETSTOREContext context)
+        public PermisoController(MARKETSTOREContext context)
         {
             _context = context;
         }
 
-        private static List<MenuVm> ListarMenus(List<Menu> menus)
-        {
-            List<MenuVm> result = new List<MenuVm>();
-            Dictionary<int, MenuVm> resultDict = new Dictionary<int, MenuVm>();
+        //private static List<PermisoVm> ListarMenus(List<Menu> menus)
+        //{
+        //    List<PermisoVm> result = new List<PermisoVm>();
+        //    Dictionary<int, PermisoVm> resultDict = new Dictionary<int, PermisoVm>();
 
-            foreach (var item in menus)
-            {
-                MenuVm child = new MenuVm(item);
+        //    foreach (var item in menus)
+        //    {
+        //        PermisoVm child = new PermisoVm(item);
 
-                if (child.Nivel != null)
-                {
-                    resultDict[child.Nivel ?? 0].Children.Add(child);
-                    continue;
-                }
+        //        if (child.GrupoId != null)
+        //        {
+        //            resultDict[child.GrupoId ?? 0].Children.Add(child);
+        //            continue;
+        //        }
 
-                resultDict.Add(child.Id, child);
-                result.Add(child);
-            }
+        //        resultDict.Add(child.Id, child);
+        //        result.Add(child);
+        //    }
 
-            return result;
-        }
+        //    return result;
+        //}
 
         // GET: api/Menu
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Menu>>> GetMenu(bool todos=false)
+        public async Task<ActionResult<IEnumerable<Permiso>>> GetPermiso(bool todos = false)
         {
             try
             {
                 if (todos)
                 {
-                    var menus = await (from m in _context.Menu
-                                       join p in _context.Permiso
-                                       on m.PermisoId equals p.Id
-                                       where p.Protegido
-                                       select m).ToListAsync();
+                    //var menuGrupos = await (from m in _context.Permiso
+                    //                        join mg in _context.Menugrupo
+                    //                        on m.MenuId equals mg.Id
+                    //                        where m.Protegido
+                    //                        select mg)
+                    //                        .Distinct()
+                    //                        .ToListAsync();
+                    var menuGrupos = await _context.Menugrupo.Include(x => x.Permiso).ToListAsync();
 
-                    List<MenuVm> result = ListarMenus(menus);
-
-                    return Ok(result);
+                    return Ok(menuGrupos);
                 }
 
                 if (User.Identity?.Name != null)
@@ -68,26 +69,28 @@ namespace MarketStore.Controllers
                     int usuarioId = int.Parse(User.Identity.Name);
                     Usuario usuario = await _context.Usuario.FindAsync(usuarioId);
 
-                    var menus = await (from m in _context.Menu
-                                            join p in _context.Permiso
-                                            on m.PermisoId equals p.Id
-                                            join rp in _context.RolPermiso
-                                            on p.Id equals rp.PermisoId
-                                            join r in _context.Rol
-                                            on rp.RolId equals r.Id
-                                            join u in _context.Usuario
-                                            on r.Id equals u.RolId
-                                            where u.Id == usuario.Id
-                                            orderby m.Nivel
-                                            select m).ToListAsync();
+                    var menuGrupos = await (from m in _context.Menugrupo
+                                       join p in _context.Permiso
+                                       on m.Id equals p.MenuId
+                                       join rp in _context.Rolpermiso
+                                       on p.Id equals rp.PermisoId
+                                       join r in _context.Rol
+                                       on rp.RolId equals r.Id
+                                       join u in _context.Usuario
+                                       on r.Id equals u.RolId
+                                       where u.Id == usuario.Id
+                                       select m).Include(x => x.Permiso).ToListAsync();
 
-                    List<MenuVm> result = ListarMenus(menus);
-                   
-                    return Ok(result);
+                    //var menuGrupos2 = await _context
+
+                    //List<PermisoVm> result = ListarMenus(menus);
+
+                    return Ok(menuGrupos);
                 }
 
                 return Unauthorized();
-            } catch (Exception e)
+            }
+            catch (Exception e)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
             }
@@ -95,17 +98,15 @@ namespace MarketStore.Controllers
 
         // GET: api/Menu/5
         [HttpGet("validar/")]
-        public async Task<ActionResult> ValidateMenu(string ruta)
+        public async Task<ActionResult> ValidatePermiso(string ruta)
         {
             try
             {
-                Permiso permiso = await (from m in _context.Menu
-                                         join p in _context.Permiso
-                                         on m.PermisoId equals p.Id
-                                         where m.Ruta == ruta
+                Permiso permiso = await (from p in _context.Permiso
+                                         where p.Ruta == ruta
                                          select p).FirstOrDefaultAsync();
 
-                if(permiso!=null && !permiso.Protegido)
+                if (permiso != null && !permiso.Protegido)
                 {
                     return NoContent();
                 }
@@ -115,19 +116,19 @@ namespace MarketStore.Controllers
                     int usuarioId = int.Parse(User.Identity.Name);
                     Usuario usuario = await _context.Usuario.FindAsync(usuarioId);
 
-                    var menu = await (from m in _context.Menu
+                    var menu = await (from m in _context.Menugrupo
                                       join p in _context.Permiso
-                                      on m.PermisoId equals p.Id
-                                      join rp in _context.RolPermiso
+                                      on m.Id equals p.MenuId
+                                      join rp in _context.Rolpermiso
                                       on p.Id equals rp.PermisoId
                                       join r in _context.Rol
                                       on rp.RolId equals r.Id
                                       join u in _context.Usuario
                                       on r.Id equals u.RolId
                                       where u.Id == usuario.Id && p.Protegido
-                                      select m).ToListAsync();
+                                      select p).ToListAsync();
 
-                    foreach (Menu x in menu)
+                    foreach (Permiso x in menu)
                     {
                         string[] bdUri = new Uri("http://localhost" + x.Ruta).Segments;
                         string[] inputUri = new Uri("http://localhost" + ruta).Segments;
@@ -143,7 +144,8 @@ namespace MarketStore.Controllers
                             {
                                 if (i == inputUri.Length - 1) return NoContent();
                                 continue;
-                            } else
+                            }
+                            else
                             {
                                 if (bdUri[i] != inputUri[i]) break;
                                 else
@@ -168,9 +170,9 @@ namespace MarketStore.Controllers
 
         // GET: api/Menu/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Menu>> GetMenu(int id)
+        public async Task<ActionResult<Permiso>> GetPermiso(int id)
         {
-            var menu = await _context.Menu.FindAsync(id);
+            var menu = await _context.Permiso.FindAsync(id);
 
             if (menu == null)
             {
@@ -183,14 +185,14 @@ namespace MarketStore.Controllers
         // PUT: api/Menu/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutMenu(int id, Menu menu)
+        public async Task<IActionResult> PutPermiso(int id, Permiso permiso)
         {
-            if (id != menu.Id)
+            if (id != permiso.Id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(menu).State = EntityState.Modified;
+            _context.Entry(permiso).State = EntityState.Modified;
 
             try
             {
@@ -198,7 +200,7 @@ namespace MarketStore.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!MenuExists(id))
+                if (!PermisoExists(id))
                 {
                     return NotFound();
                 }
@@ -214,33 +216,33 @@ namespace MarketStore.Controllers
         // POST: api/Menu
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Menu>> PostMenu(Menu menu)
+        public async Task<ActionResult<Permiso>> PostPermiso(Permiso permiso)
         {
-            _context.Menu.Add(menu);
+            _context.Permiso.Add(permiso);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetMenu", new { id = menu.Id }, menu);
+            return CreatedAtAction("GetPermiso", new { id = permiso.Id }, permiso);
         }
 
         // DELETE: api/Menu/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteMenu(int id)
+        public async Task<IActionResult> DeletePermiso(int id)
         {
-            var menu = await _context.Menu.FindAsync(id);
-            if (menu == null)
+            var permiso = await _context.Permiso.FindAsync(id);
+            if (permiso == null)
             {
                 return NotFound();
             }
 
-            _context.Menu.Remove(menu);
+            _context.Permiso.Remove(permiso);
             await _context.SaveChangesAsync();
 
             return NoContent();
         }
 
-        private bool MenuExists(int id)
+        private bool PermisoExists(int id)
         {
-            return _context.Menu.Any(e => e.Id == id);
+            return _context.Permiso.Any(e => e.Id == id);
         }
     }
 }

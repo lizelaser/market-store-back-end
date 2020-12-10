@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
-
 #nullable disable
 
 namespace Domain.Models
@@ -13,7 +12,7 @@ namespace Domain.Models
         public string Denominacion { get; set; }
 
         [JsonIgnore]
-        public virtual ICollection<RolPermiso> RolPermiso { get; set; }
+        public virtual ICollection<Rolpermiso> Rolpermiso { get; set; }
         [JsonIgnore]
         public virtual ICollection<Usuario> Usuario { get; set; }
     }
