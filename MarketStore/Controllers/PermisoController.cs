@@ -6,8 +6,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Domain.Models;
-using System.Reflection;
-using MarketStore.Models;
 
 namespace MarketStore.Controllers
 {
@@ -52,13 +50,6 @@ namespace MarketStore.Controllers
             {
                 if (todos)
                 {
-                    //var menuGrupos = await (from m in _context.Permiso
-                    //                        join mg in _context.Menugrupo
-                    //                        on m.MenuId equals mg.Id
-                    //                        where m.Protegido
-                    //                        select mg)
-                    //                        .Distinct()
-                    //                        .ToListAsync();
                     var menuGrupos = await _context.Menugrupo.Include(x => x.Permiso).ToListAsync();
 
                     return Ok(menuGrupos);
@@ -69,21 +60,35 @@ namespace MarketStore.Controllers
                     int usuarioId = int.Parse(User.Identity.Name);
                     Usuario usuario = await _context.Usuario.FindAsync(usuarioId);
 
-                    var menuGrupos = await (from m in _context.Menugrupo
-                                       join p in _context.Permiso
-                                       on m.Id equals p.MenuId
-                                       join rp in _context.Rolpermiso
-                                       on p.Id equals rp.PermisoId
-                                       join r in _context.Rol
-                                       on rp.RolId equals r.Id
-                                       join u in _context.Usuario
-                                       on r.Id equals u.RolId
-                                       where u.Id == usuario.Id
-                                       select m).Include(x => x.Permiso).ToListAsync();
+                    var menuGrupos = await (from mg in _context.Menugrupo
 
-                    //var menuGrupos2 = await _context
+                                            join p in _context.Permiso
+                                            on mg.Id equals p.MenuId
 
-                    //List<PermisoVm> result = ListarMenus(menus);
+                                            join rp in _context.Rolpermiso
+                                            on p.Id equals rp.PermisoId
+
+                                            where rp.RolId == usuario.RolId
+
+                                            select mg)
+                        .Distinct()
+                        .ToListAsync();
+
+                    foreach (var menugrupo in menuGrupos)
+                    {
+                        menugrupo.Permiso = await (from p in _context.Permiso
+
+                                                   join mg in _context.Menugrupo
+                                                   on p.MenuId equals mg.Id
+
+                                                   join rp in _context.Rolpermiso
+                                                   on p.Id equals rp.PermisoId
+
+                                                   where menugrupo.Id == p.MenuId
+                                                   where rp.RolId == usuario.RolId
+
+                                                   select p).ToListAsync();
+                    }
 
                     return Ok(menuGrupos);
                 }
