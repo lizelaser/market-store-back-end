@@ -1,6 +1,8 @@
 # Market Store
 > Free and responsive Ecommerce containing organic and ancestral products, shopping cart and checkout process. Free for personal and commercial use.
 
+Note: the backend repository can be accessed through the following link [https://github.com/lizelaser/descubre-back-end](https://github.com/lizelaser/market-store-back-end)
+
 ## Table of Contents
 * [General Info](#general-information)
 * [Technologies Used](#technologies-used)
@@ -15,10 +17,24 @@
 
 
 ## General Information
-- Organic food ecommerce.
-- What problem does it (intend to) solve?
-- What is the purpose of your project?
-- Why did you undertake it?
+
+The following project was developed based on market research to satisfy the need to obtain organic and healthy staple foods without leaving home in the population of Ayacucho, Peru.
+
+This research was executed with the [following survey](https://docs.google.com/forms/d/e/1FAIpQLSecQ-08M_RF1_4a8P1s0EPHft-T_plLXU_ymXtlFqfemmfdbw/viewform?fbclid=IwAR0Cloj6X2HDXETP4DTBOW6HfYmfKsH5LbyA1vYFx9koB_znbqA2ntLv0y8) using Google Forms. A total of 14 participants responded, the results of which are summarized in the following images:
+
+<img alt="Survey question" src="./images/research/1.png" width="100%" />
+<img alt="Survey question" src="./images/research/2.png" width="100%" />
+<img alt="Survey question" src="./images/research/3.png" width="100%" />
+<img alt="Survey question" src="./images/research/4.png" width="100%" />
+<img alt="Survey question" src="./images/research/5.png" width="100%" />
+<img alt="Survey question" src="./images/research/6.png" width="100%" />
+<img alt="Survey question" src="./images/research/7.png" width="100%" />
+<img alt="Survey question" src="./images/research/8.png" width="100%" />
+<img alt="Survey question" src="./images/research/9.png" width="100%" />
+<img alt="Survey question" src="./images/research/10.png" width="100%" />
+<img alt="Survey question" src="./images/research/11.png" width="100%" />
+<img alt="Survey question" src="./images/research/12.png" width="100%" />
+<img alt="Survey question" src="./images/research/13.png" width="100%" />
 
 ## Technologies Used
 
@@ -53,13 +69,13 @@
 ## Screenshots
 
 ### **Home**
-![Screenshoot](./images/1.jpg)
+![Screenshoot](./images/screenshots/1.jpg)
 ### **Cart**
-![Screenshoot](./images/10.jpg)
+![Screenshoot](./images/screenshots/10.jpg)
 ### **Login**
-![Screenshoot](./images/4.jpg)
+![Screenshoot](./images/screenshots/4.jpg)
 ### **Products**
-![Screenshoot](./images/7.jpg)
+![Screenshoot](./images/screenshots/7.jpg)
 
 
 ## Setup
@@ -72,42 +88,45 @@
 First of all, clone the repository:
 
 ```bash
-git clone git@github.com:lizelaser/front-end-market-store.git
+git clone git@github.com:lizelaser/market-store-back-end.git
 cd <path_to_project>
 ```
 ### Install dependencies
 Then you need to install the dependencies for the project:
 ```bash
-npm install
+dotnet restore
 ```
 
 ## Usage
 
 ### Build and launch for development
-Start a development server with hot-reload for development and launch the project on localhost:8080 (note that the development build is not optimized):
+Start a development server and launch the project on localhost:51302 (note that the development build is not optimized):
 
 ```bash
-npm run serve
+dotnet run
 ```
 
 ### Build and minifies for production
-Build the project in ready-to-serve minified and static files ind dist/ folder:
+Build the project in production mode:
 
 ```bash
-npm run build
+dotnet pack
 ```
 
 ## Project Status
-Project is: _complete_
+
+[![Project Status: Inactive](https://www.repostatus.org/badges/latest/inactive.svg)](https://www.repostatus.org/#active)
 
 ## Room for Improvement
 
 - Update Vue.js version to 3
-- Serve to production on a live environment
+- Add more payment methods
+- Add delivery tracking option
+- Add smart product suggestions
 
 To do:
-- Add more payment methods
-- 
+- Publish a live demo in a website
+- Improve the search experience
 
 ## Contact
 Created by [@lizelaser](https://github.com/lizelaser) - feel free to contact me!
